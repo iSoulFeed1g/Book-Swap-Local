@@ -123,25 +123,23 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
     });
 });
 
+// Create post endpoint
 app.post('/create-post', upload.single('image'), (req, res) => {
-    const { description, email } = req.body;
-    const imagePath = req.file.path;
+    const { title, description, email } = req.body;
+    const imagePath = req.file ? req.file.path : 'uploads/1719331628307.png'; // Default image path
 
-    const sql = "INSERT INTO posts (`name`, `picture`, `time`) VALUES (?, ?, NOW())";
-    const values = [
-        description, // Assuming name field is used for description
-        imagePath
-    ];
+    const sql = "INSERT INTO posts (title, picture, time, email, description) VALUES (?, ?, NOW(), ?, ?)";
+    const values = [title, imagePath, email, description];
 
     db.query(sql, values, (err, data) => {
         if (err) {
-            
-            console.error("Error inserting post:", err);
-            return res.status(500).json({ message: "Error", error: err });
+            console.error(err);
+            return res.status(500).json({ message: "Error" });
         }
-        return res.json({ message: "Success", post: { name: description, picture: imagePath, time: new Date() } });
+        return res.json({ message: "Success" });
     });
 });
+
 
 // Endpoint to fetch posts by email
 app.get('/posts', (req, res) => {
@@ -150,6 +148,51 @@ app.get('/posts', (req, res) => {
     db.query(sql, [email], (err, data) => {
         if (err) {
             console.error("Error fetching posts:", err);
+            return res.status(500).json({ message: "Error", error: err });
+        }
+        return res.json(data);
+    });
+});
+
+app.post('/delete-post', (req, res) => {
+    const { id } = req.body;
+    const sqlDelete = "DELETE FROM posts WHERE id = ?";
+    db.query(sqlDelete, [id], (err, result) => {
+        if (err) {
+            return res.json("Error");
+        }
+        if (result.affectedRows > 0) {
+            return res.json({ message: "Success" });
+        } else {
+            return res.json("Post not found");
+        }
+    });
+});
+
+// Update post endpoint
+app.post('/update-post', (req, res) => {
+    const { id, title, description } = req.body;
+
+    const sqlUpdate = "UPDATE posts SET title = ?, description = ? WHERE id = ?";
+    db.query(sqlUpdate, [title, description, id], (err, result) => {
+        if (err) {
+            return res.json({ message: "Error" });
+        }
+        return res.json({ message: "Success" });
+    });
+});
+
+// Endpoint to fetch all posts with user information
+app.get('/all-posts', (req, res) => {
+    const sql = `
+        SELECT p.id, p.title, p.picture, p.time, p.email, p.description, l.name AS user_name
+        FROM posts p
+        JOIN login l ON p.email = l.email
+        ORDER BY p.time DESC
+    `;
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error("Error fetching all posts:", err);
             return res.status(500).json({ message: "Error", error: err });
         }
         return res.json(data);

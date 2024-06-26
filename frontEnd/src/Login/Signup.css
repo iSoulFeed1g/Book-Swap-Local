@@ -1,0 +1,85 @@
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #007bff;
+}
+
+.signup-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.signup-box h2 {
+    margin-bottom: 20px;
+}
+
+.signup-box .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.signup-box .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.signup-box .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.signup-box .form-check {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.signup-box .form-check-input {
+    margin-right: 10px;
+}
+
+.signup-box .form-check-label {
+    margin-bottom: 0;
+}
+
+.signup-box .btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.signup-box .btn:hover {
+    background-color: #218838;
+}
+
+.signup-box .text-danger {
+    display: block;
+    margin-bottom: 10px;
+    color: #dc3545;
+}
+
+.signup-box p {
+    margin-top: 10px;
+}
+
+.signup-box a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-box a:hover {
+    text-decoration: underline;
+}

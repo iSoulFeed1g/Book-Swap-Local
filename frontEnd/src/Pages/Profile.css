@@ -1,0 +1,183 @@
+.profile-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.profile-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #e0f7fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.profile-picture {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-pic-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.ratings {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.likes, .dislikes {
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.posts-section {
+    width: 75%; 
+    margin-left: -50px;
+    margin-right: 25px;
+    margin-top: 20px;
+}
+
+.posts-container {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid #dcdcdc;
+}
+
+.posts-container::before {
+    content: '';
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.no-posts {
+    margin: 0;
+    text-align: center;
+}
+
+.profile-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.post {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.post-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.post-details {
+    flex-grow: 1;
+    padding: 0 20px;
+    text-align: left !important;
+}
+
+.post-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.post-description {
+    font-size: 15px;
+    margin-top: 5px; /* Add margin to separate from title */
+    text-align: left;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.post:hover .post-actions {
+    opacity: 1;
+}
+
+.modal {
+    display: flex !important; 
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    z-index: 1 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0,0,0,0.4) !important;
+}
+
+.modal-content {
+    background-color: #fefefe !important;
+    padding: 20px !important;
+    border: 1px solid #888 !important;
+    width: 80% !important;
+    max-width: 500px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+    text-align: center !important;
+}
+
+.image-preview {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.btn-danger {
+    background-color: red;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: gray;
+    color: white;
+}
+
+.btn-primary {
+    background-color: blue;
+    color: white;
+}
+
+.btn-success {
+    background-color: green;
+    color: white;
+}
