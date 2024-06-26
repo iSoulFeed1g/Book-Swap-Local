@@ -123,6 +123,40 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
     });
 });
 
+app.post('/create-post', upload.single('image'), (req, res) => {
+    const { description, email } = req.body;
+    const imagePath = req.file.path;
+
+    const sql = "INSERT INTO posts (`name`, `picture`, `time`) VALUES (?, ?, NOW())";
+    const values = [
+        description, // Assuming name field is used for description
+        imagePath
+    ];
+
+    db.query(sql, values, (err, data) => {
+        if (err) {
+            
+            console.error("Error inserting post:", err);
+            return res.status(500).json({ message: "Error", error: err });
+        }
+        return res.json({ message: "Success", post: { name: description, picture: imagePath, time: new Date() } });
+    });
+});
+
+// Endpoint to fetch posts by email
+app.get('/posts', (req, res) => {
+    const { email } = req.query;
+    const sql = "SELECT * FROM posts WHERE email = ?";
+    db.query(sql, [email], (err, data) => {
+        if (err) {
+            console.error("Error fetching posts:", err);
+            return res.status(500).json({ message: "Error", error: err });
+        }
+        return res.json(data);
+    });
+});
+
+
 app.listen(8081, () => {
     console.log("Server is running on port 8081");
 });
