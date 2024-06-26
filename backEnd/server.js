@@ -125,18 +125,62 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
 
 // Create post endpoint
 app.post('/create-post', upload.single('image'), (req, res) => {
-    const { title, description, email } = req.body;
-    const imagePath = req.file ? req.file.path : 'uploads/1719331628307.png'; // Default image path
+    const { title, description, email, price } = req.body;
+    const picture = req.file ? req.file.path : 'uploads/1719331628307.png';
 
-    const sql = "INSERT INTO posts (title, picture, time, email, description) VALUES (?, ?, NOW(), ?, ?)";
-    const values = [title, imagePath, email, description];
+    if (!title || !description || !price) {
+        return res.status(400).json({ message: "Title, description, and price are required" });
+    }
 
-    db.query(sql, values, (err, data) => {
+    const sql = "INSERT INTO posts (title, description, email, price, picture) VALUES (?, ?, ?, ?, ?)";
+    db.query(sql, [title, description, email, price, picture], (err, data) => {
         if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Error" });
+            console.error("Error creating post:", err);
+            return res.json({ message: "Error" });
         }
         return res.json({ message: "Success" });
+    });
+});
+
+// Updade post endpoint
+app.post('/update-post', upload.single('image'), (req, res) => {
+    const { id, title, description, price } = req.body;
+    const picture = req.file ? req.file.path : null;
+
+    if (!title || !description || !price) {
+        return res.status(400).json({ message: "Title, description, and price are required" });
+    }
+
+    const sql = picture
+        ? "UPDATE posts SET title = ?, description = ?, price = ?, picture = ? WHERE id = ?"
+        : "UPDATE posts SET title = ?, description = ?, price = ? WHERE id = ?";
+
+    const params = picture
+        ? [title, description, price, picture, id]
+        : [title, description, price, id];
+
+    db.query(sql, params, (err, data) => {
+        if (err) {
+            console.error("Error updating post:", err);
+            return res.json({ message: "Error" });
+        }
+        return res.json({ message: "Success" });
+    });
+});
+
+// Endpoint to fetch all posts with user information
+app.get('/all-posts', (req, res) => {
+    const sql = `
+        SELECT posts.*, login.name as user_name 
+        FROM posts 
+        JOIN login ON posts.email = login.email 
+        ORDER BY posts.id DESC`;
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error("Error fetching posts:", err);  // Log the error
+            return res.json("Error");
+        }
+        return res.json(data);
     });
 });
 
@@ -169,31 +213,21 @@ app.post('/delete-post', (req, res) => {
     });
 });
 
-// Update post endpoint
-app.post('/update-post', (req, res) => {
-    const { id, title, description } = req.body;
 
-    const sqlUpdate = "UPDATE posts SET title = ?, description = ? WHERE id = ?";
-    db.query(sqlUpdate, [title, description, id], (err, result) => {
-        if (err) {
-            return res.json({ message: "Error" });
-        }
-        return res.json({ message: "Success" });
-    });
-});
-
-// Endpoint to fetch all posts with user information
-app.get('/all-posts', (req, res) => {
+// Search posts endpoint
+app.get('/search-posts', (req, res) => {
+    const searchQuery = req.query.q || '';
     const sql = `
-        SELECT p.id, p.title, p.picture, p.time, p.email, p.description, l.name AS user_name
-        FROM posts p
-        JOIN login l ON p.email = l.email
-        ORDER BY p.time DESC
-    `;
-    db.query(sql, (err, data) => {
+        SELECT posts.*, login.name as user_name 
+        FROM posts 
+        JOIN login ON posts.email = login.email 
+        WHERE posts.title LIKE ? OR posts.description LIKE ? 
+        ORDER BY posts.id DESC`;
+
+    db.query(sql, [`%${searchQuery}%`, `%${searchQuery}%`], (err, data) => {
         if (err) {
-            console.error("Error fetching all posts:", err);
-            return res.status(500).json({ message: "Error", error: err });
+            console.error("Error searching posts:", err);  // Log the error
+            return res.json("Error");
         }
         return res.json(data);
     });

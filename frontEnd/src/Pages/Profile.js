@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThumbsUp, faThumbsDown, faPowerOff, faCog, faHome, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import CreatePost from './CreatePost'; // Import CreatePost component
 import './Profile.css';
 
 function Profile() {
@@ -14,6 +15,7 @@ function Profile() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [description, setDescription] = useState('');
     const [title, setTitle] = useState('');
+    const [price, setPrice] = useState('');
     const [showDiscardModal, setShowDiscardModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingPostId, setEditingPostId] = useState(null); // State for editing post
@@ -77,33 +79,7 @@ function Profile() {
         setEditingPostId(null);  // Reset editing post ID when creating a new post
         setTitle('');  // Reset title
         setDescription('');  // Reset description
-    };
-
-    const handleImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedImage(e.target.files[0]);
-        }
-    };
-
-    const handleSharePost = () => {
-        const formData = new FormData();
-        formData.append('image', selectedImage);
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('email', user.email);
-
-        axios.post('http://localhost:8081/create-post', formData)
-            .then(res => {
-                if (res.data.message === "Success") {
-                    fetchPosts(user.email);
-                    setShowModal(false);
-                } else {
-                    console.log("Failed to create post");
-                }
-            })
-            .catch(err => {
-                console.log("Error occurred while creating post", err);
-            });
+        setPrice('');  // Reset price
     };
 
     const handleCancelPost = () => {
@@ -119,26 +95,8 @@ function Profile() {
         setEditingPostId(post.id);
         setTitle(post.title);
         setDescription(post.description);
+        setPrice(post.price);
         setShowModal(true);
-    };
-
-    const handleSaveChanges = () => {
-        axios.post('http://localhost:8081/update-post', {
-            id: editingPostId,
-            title,
-            description
-        })
-            .then(res => {
-                if (res.data.message === "Success") {
-                    fetchPosts(user.email);
-                    setShowModal(false);
-                } else {
-                    console.log("Failed to update post");
-                }
-            })
-            .catch(err => {
-                console.log("Error occurred while updating post", err);
-            });
     };
 
     const handleDeletePost = () => {
@@ -205,6 +163,7 @@ function Profile() {
                                 <div className="post-details">
                                     <p className="post-title">{post.title}</p>
                                     <p className="post-description">{post.description}</p>
+                                    <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
                                 </div>
                                 <div className="post-actions">
                                     <FontAwesomeIcon icon={faEdit} onClick={() => handleEditPost(post)} />
@@ -219,33 +178,16 @@ function Profile() {
                 <button className="btn btn-success mt-3" onClick={handleCreatePost}>Create Post</button>
             </div>
             {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>{editingPostId ? 'Edit Post' : 'Upload an image'}</h3>
-                        <input
-                            type="text"
-                            placeholder="Title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="form-control mt-2"
-                        />
-                        <textarea
-                            placeholder="Write a caption..."
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="form-control mt-2"
-                        ></textarea>
-                        {!selectedImage && !editingPostId && (
-                            <input type="file" onChange={handleImageChange} />
-                        )}
-                        {editingPostId ? (
-                            <button className="btn btn-primary mt-2" onClick={handleSaveChanges}>Save Changes</button>
-                        ) : (
-                            <button className="btn btn-primary mt-2" onClick={handleSharePost}>Share</button>
-                        )}
-                        <button className="btn btn-secondary mt-2" onClick={handleCancelPost}>Cancel</button>
-                    </div>
-                </div>
+                <CreatePost
+                    user={user}
+                    fetchPosts={fetchPosts}
+                    setShowModal={setShowModal}
+                    editingPostId={editingPostId}
+                    setEditingPostId={setEditingPostId}
+                    initialTitle={title}
+                    initialDescription={description}
+                    initialPrice={price}
+                />
             )}
             {showDiscardModal && (
                 <div className="modal">
