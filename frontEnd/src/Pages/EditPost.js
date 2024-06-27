@@ -78,16 +78,19 @@ function EditPost() {
         }
 
         const formData = new FormData();
-        formData.append('image', selectedImage);
+        formData.append('id', id);  // Append id to formData
         formData.append('title', title);
         formData.append('description', description);
         formData.append('author', author);  // Append author to formData
         formData.append('price', price);
+        if (selectedImage) {
+            formData.append('picture', selectedImage);
+        }
 
-        axios.post(`http://localhost:8081/update-post/${id}`, formData)
+        axios.post('http://localhost:8081/edit-post', formData)
             .then(res => {
                 if (res.data.message === "Success") {
-                    navigate('/profile');
+                    navigate(`/post/${id}`);
                 } else {
                     console.log("Failed to update post");
                 }

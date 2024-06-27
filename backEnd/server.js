@@ -125,11 +125,11 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
 
 // Create post endpoint
 app.post('/create-post', upload.single('picture'), (req, res) => {
-    const { title, description, price, author } = req.body;
+    const { title, description, price, author, email } = req.body;
     const picture = req.file ? req.file.path : null;
 
-    const sql = "INSERT INTO posts (title, description, price, author, picture) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [title, description, price, author, picture], (err, data) => {
+    const sql = "INSERT INTO posts (title, description, price, author, picture, email) VALUES (?, ?, ?, ?, ?, ?)";
+    db.query(sql, [title, description, price, author, picture, email], (err, data) => {
         if (err) {
             console.error("Error creating post:", err);
             return res.status(500).json({ message: 'Error creating post' });
@@ -138,9 +138,7 @@ app.post('/create-post', upload.single('picture'), (req, res) => {
     });
 });
 
-
-
-// Updade post endpoint
+// Update post endpoint
 app.post('/edit-post', upload.single('picture'), (req, res) => {
     const { id, title, description, price, author } = req.body;
     const picture = req.file ? req.file.path : null;
@@ -159,7 +157,6 @@ app.post('/edit-post', upload.single('picture'), (req, res) => {
     });
 });
 
-
 // Endpoint to fetch all posts with user information
 app.get('/all-posts', (req, res) => {
     const sql = `
@@ -176,7 +173,6 @@ app.get('/all-posts', (req, res) => {
     });
 });
 
-
 // Endpoint to fetch posts by email
 app.get('/posts', (req, res) => {
     const { email } = req.query;
@@ -190,7 +186,7 @@ app.get('/posts', (req, res) => {
     });
 });
 
-
+// Delete post endpoint
 app.post('/delete-post', (req, res) => {
     const { id } = req.body;
     const sql = "DELETE FROM posts WHERE id = ?";
@@ -202,7 +198,6 @@ app.post('/delete-post', (req, res) => {
         return res.json({ message: "Success" });
     });
 });
-
 
 // Search posts endpoint
 app.get('/search-posts', (req, res) => {
@@ -223,7 +218,7 @@ app.get('/search-posts', (req, res) => {
     });
 });
 
-//Post Details and Own Post Details
+// Post Details and Own Post Details
 app.get('/post/:id', (req, res) => {
     const postId = req.params.id;
     const sql = `
@@ -240,25 +235,27 @@ app.get('/post/:id', (req, res) => {
     });
 });
 
-app.get('/edit-post/:id', (req, res) => {
-    const postId = req.params.id;
-    const sql = `
-        SELECT posts.*, login.name AS user_name, login.email AS user_email
-        FROM posts
-        JOIN login ON posts.email = login.email
-        WHERE posts.id = ?`;
-    db.query(sql, [postId], (err, data) => {
+// Update post endpoint
+app.post('/edit-post', upload.single('picture'), (req, res) => {
+    const { id, title, description, price, author } = req.body;
+    const picture = req.file ? req.file.path : null;
+
+    const updateQuery = `
+        UPDATE posts
+        SET title = ?, description = ?, price = ?, author = ?
+        ${picture ? ', picture = ?' : ''}
+        WHERE id = ?`;
+
+    const queryParams = picture ? [title, description, price, author, picture, id] : [title, description, price, author, id];
+
+    db.query(updateQuery, queryParams, (err, data) => {
         if (err) {
-            console.error("Error fetching post:", err);
-            return res.status(500).json({ message: 'Error fetching post' });
+            console.error("Error updating post:", err);
+            return res.status(500).json({ message: 'Error updating post' });
         }
-        return res.json(data[0]);
+        return res.json({ message: "Success" });
     });
 });
-
-
-
-
 
 
 app.listen(8081, () => {

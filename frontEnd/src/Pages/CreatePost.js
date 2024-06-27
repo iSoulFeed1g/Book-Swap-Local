@@ -68,7 +68,7 @@ function CreatePost() {
         }
 
         const formData = new FormData();
-        formData.append('image', selectedImage);
+        formData.append('picture', selectedImage); // Changed 'image' to 'picture' to match backend
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
