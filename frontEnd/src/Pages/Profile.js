@@ -1,9 +1,10 @@
+// Import necessary modules and components
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faThumbsUp, faThumbsDown, faPowerOff, faCog, faHome, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import CreatePost from './CreatePost'; // Import CreatePost component
+import CreatePost from './CreatePost';
 import './Profile.css';
 
 function Profile() {
@@ -36,12 +37,14 @@ function Profile() {
     const fetchPosts = (email) => {
         axios.get(`http://localhost:8081/posts?email=${email}`)
             .then(res => {
-                setPosts(res.data);
+                const sortedPosts = res.data.sort((a, b) => b.id - a.id);
+                setPosts(sortedPosts);
             })
             .catch(err => {
                 console.log(err);
             });
     };
+    
 
     const handleFileChange = (e) => {
         setProfilePic(e.target.files[0]);
@@ -74,12 +77,7 @@ function Profile() {
     };
 
     const handleCreatePost = () => {
-        setSelectedImage(null);  // Reset the selected image when opening the modal
-        setShowModal(true);
-        setEditingPostId(null);  // Reset editing post ID when creating a new post
-        setTitle('');  // Reset title
-        setDescription('');  // Reset description
-        setPrice('');  // Reset price
+        navigate('/create-post', { state: { user } });
     };
 
     const handleCancelPost = () => {
@@ -120,6 +118,10 @@ function Profile() {
         setEditingPostId(postId);
         setShowDeleteModal(true);
     };
+    
+    const handlePostClick = (postId) => {
+        navigate(`/post/${postId}`);
+    };
 
     if (!user) {
         return <div>Loading...</div>;
@@ -158,16 +160,17 @@ function Profile() {
                 <div className="posts-container">
                     {posts.length > 0 ? (
                         posts.map(post => (
-                            <div className="post" key={post.id}>
+                            <div
+                                className="post"
+                                key={post.id}
+                                onClick={() => handlePostClick(post.id)} // Add onClick handler
+                                style={{ cursor: 'pointer' }} // Add cursor pointer style
+                            >
                                 <img src={`http://localhost:8081/${post.picture}`} alt={post.title} className="post-image" />
                                 <div className="post-details">
                                     <p className="post-title">{post.title}</p>
                                     <p className="post-description">{post.description}</p>
                                     <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
-                                </div>
-                                <div className="post-actions">
-                                    <FontAwesomeIcon icon={faEdit} onClick={() => handleEditPost(post)} />
-                                    <FontAwesomeIcon icon={faTrash} onClick={() => handleDeleteClick(post.id)} />
                                 </div>
                             </div>
                         ))
@@ -177,18 +180,6 @@ function Profile() {
                 </div>
                 <button className="btn btn-success mt-3" onClick={handleCreatePost}>Create Post</button>
             </div>
-            {showModal && (
-                <CreatePost
-                    user={user}
-                    fetchPosts={fetchPosts}
-                    setShowModal={setShowModal}
-                    editingPostId={editingPostId}
-                    setEditingPostId={setEditingPostId}
-                    initialTitle={title}
-                    initialDescription={description}
-                    initialPrice={price}
-                />
-            )}
             {showDiscardModal && (
                 <div className="modal">
                     <div className="modal-content">

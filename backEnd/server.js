@@ -12,9 +12,9 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 4306,
+    port: 5306,
     password: '',
-    database: 'sisiii_project'
+    database: 'SISIII2024_89211069'
 });
 
 // Multer setup for file uploads
@@ -40,7 +40,7 @@ app.use('/uploads', express.static('uploads'));
 // Signup endpoint
 app.post('/signup', (req, res) => {
     const sql = "INSERT INTO login (`name`, `email`, `password`, `profile_pic`) VALUES (?)";
-    const defaultProfilePic = 'uploads/1719331628307.png'; // Path to default profile picture
+    const defaultProfilePic = 'uploads/default_image.png'; // Path to default profile picture
     const values = [
         req.body.name,
         req.body.email,
@@ -124,49 +124,41 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
 });
 
 // Create post endpoint
-app.post('/create-post', upload.single('image'), (req, res) => {
-    const { title, description, email, price } = req.body;
-    const picture = req.file ? req.file.path : 'uploads/1719331628307.png';
-
-    if (!title || !description || !price) {
-        return res.status(400).json({ message: "Title, description, and price are required" });
-    }
-
-    const sql = "INSERT INTO posts (title, description, email, price, picture) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [title, description, email, price, picture], (err, data) => {
-        if (err) {
-            console.error("Error creating post:", err);
-            return res.json({ message: "Error" });
-        }
-        return res.json({ message: "Success" });
-    });
-});
-
-// Updade post endpoint
-app.post('/update-post', upload.single('image'), (req, res) => {
-    const { id, title, description, price } = req.body;
+app.post('/create-post', upload.single('picture'), (req, res) => {
+    const { title, description, price, author } = req.body;
     const picture = req.file ? req.file.path : null;
 
-    if (!title || !description || !price) {
-        return res.status(400).json({ message: "Title, description, and price are required" });
-    }
-
-    const sql = picture
-        ? "UPDATE posts SET title = ?, description = ?, price = ?, picture = ? WHERE id = ?"
-        : "UPDATE posts SET title = ?, description = ?, price = ? WHERE id = ?";
-
-    const params = picture
-        ? [title, description, price, picture, id]
-        : [title, description, price, id];
-
-    db.query(sql, params, (err, data) => {
+    const sql = "INSERT INTO posts (title, description, price, author, picture) VALUES (?, ?, ?, ?, ?)";
+    db.query(sql, [title, description, price, author, picture], (err, data) => {
         if (err) {
-            console.error("Error updating post:", err);
-            return res.json({ message: "Error" });
+            console.error("Error creating post:", err);
+            return res.status(500).json({ message: 'Error creating post' });
         }
         return res.json({ message: "Success" });
     });
 });
+
+
+
+// Updade post endpoint
+app.post('/edit-post', upload.single('picture'), (req, res) => {
+    const { id, title, description, price, author } = req.body;
+    const picture = req.file ? req.file.path : null;
+
+    const updateQuery = `
+        UPDATE posts
+        SET title = ?, description = ?, price = ?, author = ?, picture = ?
+        WHERE id = ?`;
+
+    db.query(updateQuery, [title, description, price, author, picture, id], (err, data) => {
+        if (err) {
+            console.error("Error updating post:", err);
+            return res.status(500).json({ message: 'Error updating post' });
+        }
+        return res.json({ message: "Success" });
+    });
+});
+
 
 // Endpoint to fetch all posts with user information
 app.get('/all-posts', (req, res) => {
@@ -198,18 +190,16 @@ app.get('/posts', (req, res) => {
     });
 });
 
+
 app.post('/delete-post', (req, res) => {
     const { id } = req.body;
-    const sqlDelete = "DELETE FROM posts WHERE id = ?";
-    db.query(sqlDelete, [id], (err, result) => {
+    const sql = "DELETE FROM posts WHERE id = ?";
+    db.query(sql, [id], (err, data) => {
         if (err) {
-            return res.json("Error");
+            console.error("Error deleting post:", err);
+            return res.status(500).json({ message: 'Error deleting post' });
         }
-        if (result.affectedRows > 0) {
-            return res.json({ message: "Success" });
-        } else {
-            return res.json("Post not found");
-        }
+        return res.json({ message: "Success" });
     });
 });
 
@@ -232,6 +222,43 @@ app.get('/search-posts', (req, res) => {
         return res.json(data);
     });
 });
+
+//Post Details and Own Post Details
+app.get('/post/:id', (req, res) => {
+    const postId = req.params.id;
+    const sql = `
+        SELECT posts.*, login.name AS user_name, login.email AS user_email
+        FROM posts
+        JOIN login ON posts.email = login.email
+        WHERE posts.id = ?`;
+    db.query(sql, [postId], (err, data) => {
+        if (err) {
+            console.error("Error fetching post:", err);
+            return res.status(500).json({ message: 'Error fetching post' });
+        }
+        return res.json(data[0]);
+    });
+});
+
+app.get('/edit-post/:id', (req, res) => {
+    const postId = req.params.id;
+    const sql = `
+        SELECT posts.*, login.name AS user_name, login.email AS user_email
+        FROM posts
+        JOIN login ON posts.email = login.email
+        WHERE posts.id = ?`;
+    db.query(sql, [postId], (err, data) => {
+        if (err) {
+            console.error("Error fetching post:", err);
+            return res.status(500).json({ message: 'Error fetching post' });
+        }
+        return res.json(data[0]);
+    });
+});
+
+
+
+
 
 
 app.listen(8081, () => {

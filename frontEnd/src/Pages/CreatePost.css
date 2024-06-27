@@ -1,108 +1,112 @@
 .create-post-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.create-post-form {
-    background-color: #fff;
+    width: 60%;
+    margin: 0 auto;
     padding: 20px;
+    background-color: white;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.create-post-form h2 {
-    margin-bottom: 20px;
+.image-upload-section {
+    margin-top: 10px;
 }
 
-.create-post-form div {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.create-post-form label {
+.image-upload-label {
     display: block;
     margin-bottom: 5px;
-}
-
-.create-post-form input,
-.create-post-form textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-}
-
-.file-input-container {
-    position: relative;
-    display: inline-block;
-}
-
-.file-input-label {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
+    font-weight: bold;
     cursor: pointer;
+    border: 2px dashed #007bff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
 }
 
-.file-input-label input {
-    display: none;
+.image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .image-preview {
     position: relative;
+    width: 150px; /* Adjust width as needed */
+    height: 150px; /* Adjust height as needed */
+    overflow: hidden;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     margin-top: 10px;
 }
 
-.image-preview img {
-    max-width: 100px;
-    border-radius: 5px;
+.selected-image {
+    width: 10%;
+    height: 10%;
+    object-fit: cover;
 }
 
 .remove-image-button {
     position: absolute;
-    top: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    top: 7px; /* Adjust as needed */
+    right: 470px; /* Adjust as needed */
+    background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
+    border-radius: 50%;
     cursor: pointer;
+    padding: 2px;  /* Adjust padding as needed */
+    font-size: 15px; /* Adjust font size as needed */
+    width: 16px; /* Adjust width as needed */
+    height: 16px; /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.drop-zone {
+    border: 2px dashed #007bff;
+    padding: 20px;
     border-radius: 5px;
-}
-
-.remove-image-button:hover {
-    background-color: rgba(0, 0, 0, 0.7);
-}
-
-.error-message {
-    color: red;
-}
-
-.success-message {
-    color: green;
-}
-
-.submit-button,
-.cancel-button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.submit-button {
-    background-color: #007bff;
-    color: white;
-}
-
-.cancel-button {
-    background-color: #6c757d;
-    color: white;
+    text-align: center;
     margin-top: 10px;
+}
+
+.price-input {
+    display: inline-block;
+    margin-right: 5px;
+    width: 100px;
+}
+
+.price-input-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.currency-symbol {
+    margin-left: 5px;
+}
+
+.error-border {
+    border-color: red;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
 }

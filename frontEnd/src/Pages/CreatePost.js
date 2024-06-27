@@ -1,33 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './CreatePost.css';
 
-function CreatePost({ user, fetchPosts, setShowModal, editingPostId, setEditingPostId, initialTitle, initialDescription, initialPrice }) {
-    const [title, setTitle] = useState(initialTitle || '');
-    const [description, setDescription] = useState(initialDescription || '');
-    const [price, setPrice] = useState(initialPrice || '');
+function CreatePost() {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [picturePreview, setPicturePreview] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState('');
+    const [author, setAuthor] = useState('');
+    const [price, setPrice] = useState('');
+    const [showDiscardModal, setShowDiscardModal] = useState(false);
+    const [titleError, setTitleError] = useState(false);
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [priceError, setPriceError] = useState(false);
+    const [authorError, setAuthorError] = useState(false);
+    const [user, setUser] = useState(null); 
+    const navigate = useNavigate();
 
-    const handleImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedImage(e.target.files[0]);
-            setPicturePreview(URL.createObjectURL(e.target.files[0]));
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            setUser(JSON.parse(userData));
+        } else {
+            navigate('/');
         }
+    }, [navigate]);
+
+    const handleFileChange = (e) => {
+        setSelectedImage(e.target.files[0]);
     };
 
-    const handleRemoveImage = () => {
-        setSelectedImage(null);
-        setPicturePreview(null);
-    };
+    const handleSharePost = () => {
+        let hasError = false;
 
-    const handleSubmit = () => {
-        if (!title || !description || !price) {
-            setErrorMessage('Title, description, and price are required');
+        if (!title) {
+            setTitleError(true);
+            hasError = true;
+        } else {
+            setTitleError(false);
+        }
+
+        if (!description) {
+            setDescriptionError(true);
+            hasError = true;
+        } else {
+            setDescriptionError(false);
+        }
+
+        if (!price) {
+            setPriceError(true);
+            hasError = true;
+        } else {
+            setPriceError(false);
+        }
+
+        if (!author) {
+            setAuthorError(true);
+            hasError = true;
+        } else {
+            setAuthorError(false);
+        }
+
+        if (hasError) {
             return;
         }
 
@@ -36,78 +72,115 @@ function CreatePost({ user, fetchPosts, setShowModal, editingPostId, setEditingP
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
+        formData.append('author', author);
         formData.append('email', user.email);
 
-        const url = editingPostId ? 'http://localhost:8081/update-post' : 'http://localhost:8081/create-post';
-        if (editingPostId) {
-            formData.append('id', editingPostId);
-        }
-
-        axios.post(url, formData)
+        axios.post('http://localhost:8081/create-post', formData)
             .then(res => {
                 if (res.data.message === "Success") {
-                    fetchPosts(user.email);
-                    setShowModal(false);
-                    setEditingPostId(null);
+                    navigate('/profile');
                 } else {
-                    setErrorMessage('Error creating/updating post');
+                    console.log("Failed to create post");
                 }
             })
             .catch(err => {
-                setErrorMessage('Error creating/updating post');
-                console.error(err);
+                console.log("Error occurred while creating post", err);
             });
     };
 
+    const handleCancelPost = () => {
+        setShowDiscardModal(true);
+    };
+
+    const handleDiscardPost = () => {
+        setShowDiscardModal(false);
+        navigate('/profile');
+    };
+
     return (
-        <div className="modal">
-            <div className="modal-content">
-                <h3>{editingPostId ? 'Edit Post' : 'Publish a Post'}</h3>
+        <div className="create-post-container">
+            <h2>Publish a Post</h2>
+            <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className={`form-control mt-2 ${titleError ? 'error-border' : ''}`}
+            />
+            <textarea
+                placeholder="Write a caption..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className={`form-control mt-2 ${descriptionError ? 'error-border' : ''}`}
+            ></textarea>
+            <input
+                type="text"
+                placeholder="Author"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                className={`form-control mt-2 ${authorError ? 'error-border' : ''}`}
+            />
+            <div className="price-input-container">
                 <input
                     type="text"
-                    placeholder="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="form-control mt-2"
-                />
-                <textarea
-                    placeholder="Write a caption..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="form-control mt-2"
-                ></textarea>
-                <input
-                    type="number"
-                    placeholder="Price (€)"
-                    step="0.01"
+                    placeholder="Price"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="form-control mt-2"
+                    className={`form-control mt-2 price-input ${priceError ? 'error-border' : ''}`}
                 />
-                {!editingPostId && (
-                    <div className="file-input-container">
-                        <label className="file-input-label">
-                            Choose File
-                            <input
-                                type="file"
-                                onChange={handleImageChange}
-                            />
-                        </label>
-                        {picturePreview && (
-                            <div className="image-preview">
-                                <img src={picturePreview} alt="Selected" />
-                                <button type="button" className="remove-image-button" onClick={handleRemoveImage}>
-                                    <FontAwesomeIcon icon={faTrashAlt} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-                {successMessage && <p className="success-message">{successMessage}</p>}
-                <button className="btn btn-primary mt-2" onClick={handleSubmit}>{editingPostId ? 'Save Changes' : 'Share'}</button>
-                <button className="btn btn-secondary mt-2" onClick={() => setShowModal(false)}>Cancel</button>
+                <span className="currency-symbol">€</span>
             </div>
+            <div className="image-upload-section">
+                <label htmlFor="file-input" className="image-upload-label">
+                    Add or Drag & Drop an image
+                </label>
+                <input
+                    id="file-input"
+                    type="file"
+                    onChange={handleFileChange}
+                    className="form-control mt-2"
+                    style={{ display: 'none' }}
+                />
+                <div
+                    className="drop-zone"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                        e.preventDefault();
+                        setSelectedImage(e.dataTransfer.files[0]);
+                    }}
+                >
+                    {selectedImage ? (
+                        <div className="image-preview">
+                            <img
+                                src={URL.createObjectURL(selectedImage)}
+                                alt="Selected"
+                                className="selected-image"
+                            />
+                            <button
+                                className="remove-image-button"
+                                onClick={() => setSelectedImage(null)}
+                            >
+                                <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                        </div>
+                    ) : (
+                        <p>Add or Drag & Drop an image</p>
+                    )}
+                </div>
+            </div>
+            <button className="btn btn-primary mt-2" onClick={handleSharePost}>Share</button>
+            <button className="btn btn-secondary mt-2" onClick={handleCancelPost}>Cancel</button>
+
+            {showDiscardModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <p>Discard post?</p>
+                        <p>If you leave, your edits won't be saved.</p>
+                        <button className="btn btn-danger mt-2" onClick={handleDiscardPost}>Discard</button>
+                        <button className="btn btn-secondary mt-2" onClick={() => setShowDiscardModal(false)}>Cancel</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

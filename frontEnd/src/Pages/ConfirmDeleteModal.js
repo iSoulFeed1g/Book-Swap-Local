@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import './ConfirmDeleteModal.css';
 
 function ConfirmDeleteModal({ show, handleClose, handleConfirm }) {
     return (
@@ -11,10 +12,10 @@ function ConfirmDeleteModal({ show, handleClose, handleConfirm }) {
                 Are you sure you want to delete your profile? This action cannot be undone.
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button className="btn" variant="secondary" onClick={handleClose} >
                     Back
                 </Button>
-                <Button variant="danger" onClick={handleConfirm}>
+                <Button className="btn" variant="danger" onClick={handleConfirm}>
                     Yes, I am sure
                 </Button>
             </Modal.Footer>

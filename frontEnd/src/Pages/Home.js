@@ -59,6 +59,10 @@ function Home() {
         }
     };
 
+    const handlePostClick = (id) => {
+        navigate(`/post/${id}`);
+    };
+
     return (
         <div className="home-container">
             <header className="header">
@@ -87,7 +91,7 @@ function Home() {
             <div className="posts-container">
                 {Array.isArray(posts) && posts.length > 0 ? (
                     posts.map(post => (
-                        <div className="post" key={post.id}>
+                        <div className="post" key={post.id} onClick={() => handlePostClick(post.id)}>
                             <img src={`http://localhost:8081/${post.picture || 'uploads/1719331628307.png'}`} alt={post.title} className="post-image" />
                             <div className="post-details">
                                 <p className="post-title">{post.title}</p>

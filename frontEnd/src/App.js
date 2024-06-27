@@ -6,6 +6,8 @@ import Home from './Pages/Home';
 import Profile from './Pages/Profile';
 import Settings from './Pages/Settings';
 import CreatePost from './Pages/CreatePost';
+import PostDetail from './Pages/PostDetail';
+import EditPost from './Pages/EditPost';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/settings' element={<Settings />}></Route>
         <Route path='/create-post' element={<CreatePost />}></Route>
+        <Route path="/post/:id" element={<PostDetail />} />
+        <Route path="/edit-post/:id" element={<EditPost />} />
       </Routes>
     </BrowserRouter>
   );
