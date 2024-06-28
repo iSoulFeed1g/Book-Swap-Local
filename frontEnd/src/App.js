@@ -8,6 +8,8 @@ import Settings from './Pages/Settings';
 import CreatePost from './Pages/CreatePost';
 import PostDetail from './Pages/PostDetail';
 import EditPost from './Pages/EditPost';
+import Chat from './Pages/Chat';
+import Inbox from './Pages/Inbox';
 
 function App() {
   return (
@@ -21,6 +23,10 @@ function App() {
         <Route path='/create-post' element={<CreatePost />}></Route>
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/edit-post/:id" element={<EditPost />} />
+        <Route path="/chat/:chatId" element={<Chat />} />
+        <Route path="/inbox/:email" element={<Inbox />} />
+        <Route path="/inbox/:chatId?" element={<Inbox />} />
+        <Route path="/inbox" element={<Inbox />} />
       </Routes>
     </BrowserRouter>
   );

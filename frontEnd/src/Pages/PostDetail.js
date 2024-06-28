@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faHome, faUser } from '@fortawesome/free-solid-svg-icons';
 import './PostDetail.css';
-import OwnPostDetail from './OwnPostDetail'; // Ensure this import is correct
+import OwnPostDetail from './OwnPostDetail';
 
 function PostDetail() {
     const { id } = useParams();
@@ -23,11 +23,35 @@ function PostDetail() {
     const fetchPost = () => {
         axios.get(`http://localhost:8081/post/${id}`)
             .then(res => {
+                console.log('Fetched post data:', res.data); // Debug log
                 setPost(res.data);
             })
             .catch(err => {
                 console.log("Error fetching post:", err);
             });
+    };
+
+    const handleContactSeller = async () => {
+        if (!user) {
+            console.error('User not logged in');
+            return;
+        }
+
+        if (!post || !post.user_id) {
+            console.error('Post or seller_id is not defined');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:8081/createChat', {
+                buyer_id: user.id,
+                seller_id: post.user_id
+            });
+            const { chat_id } = response.data;
+            navigate(`/inbox/${chat_id}`);
+        } catch (error) {
+            console.error('Failed to create chat', error);
+        }
     };
 
     if (!post) {
@@ -67,6 +91,7 @@ function PostDetail() {
                         <button className="btn btn-primary">Buy Now</button>
                         <button className="btn btn-secondary">Add to Cart</button>
                         <button className="btn btn-secondary">Add to Wishlist</button>
+                        <button className="btn btn-secondary" onClick={handleContactSeller}>Contact Seller</button>
                     </div>
                     <p className="post-user">Posted by: {post.user_name || 'Unknown'}</p>
                 </div>

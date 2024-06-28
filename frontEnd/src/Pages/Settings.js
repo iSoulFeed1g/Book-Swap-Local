@@ -36,6 +36,10 @@ function Settings() {
                     </ul>
                 </div>
                 <div className="bottom-buttons">
+                    <button className="btn-user" onClick={() => navigate('/profile')}>
+                        <FontAwesomeIcon icon={faUser} className="fa-home" />
+                        Profile
+                    </button>
                     <button className="btn-home" onClick={() => navigate('/home')}>
                         <FontAwesomeIcon icon={faHome} className="fa-home" />
                         Home

@@ -19,6 +19,7 @@ function Login() {
                     setErrorMessage('Invalid email or password');
                 } else {
                     localStorage.setItem('user', JSON.stringify(res.data));
+                    localStorage.setItem('userId', res.data.id); // Store userId in localStorage
                     navigate('/home');
                 }
             })

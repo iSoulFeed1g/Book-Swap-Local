@@ -17,17 +17,17 @@ function Home() {
     const fetchPosts = () => {
         axios.get('http://localhost:8081/all-posts')
             .then(res => {
-                console.log("Response data:", res.data);  // Log the response data
+                console.log("Response data:", res.data);
                 if (Array.isArray(res.data)) {
                     setPosts(res.data);
                 } else {
                     console.error("Unexpected response data:", res.data);
-                    setPosts([]);  // Set posts to an empty array if the response is not an array
+                    setPosts([]);
                 }
             })
             .catch(err => {
                 console.log("Error fetching all posts:", err);
-                setPosts([]);  // Set posts to an empty array if there's an error
+                setPosts([]);
             });
     };
 
@@ -44,17 +44,17 @@ function Home() {
                 params: { q: searchQuery }
             })
             .then(res => {
-                console.log("Search response data:", res.data);  // Log the response data
+                console.log("Search response data:", res.data);
                 if (Array.isArray(res.data)) {
                     setPosts(res.data);
                 } else {
                     console.error("Unexpected search response data:", res.data);
-                    setPosts([]);  // Set posts to an empty array if the response is not an array
+                    setPosts([]);
                 }
             })
             .catch(err => {
                 console.log("Error searching posts:", err);
-                setPosts([]);  // Set posts to an empty array if there's an error
+                setPosts([]);
             });
         }
     };
@@ -84,6 +84,7 @@ function Home() {
                     <div className="nav-dropdown">
                         <button onClick={() => navigate('/profile')}>Profile</button>
                         <button onClick={() => navigate('/settings')}>Settings</button>
+                        <button onClick={() => navigate('/inbox')}>Inbox</button> {/* Add Inbox button */}
                     </div>
                 </div>
             </header>

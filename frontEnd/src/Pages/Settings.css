@@ -87,6 +87,33 @@
     margin-right: 8px; /* Add margin to the home icon */
 }
 
+.btn-user {
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White text */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.btn-user:hover {
+    background-color: #0056b3;
+}
+
+.btn-user .fa-user {
+    margin-right: 8px; /* Add margin to the home icon */
+}
+
+.btn- .fa-user {
+    margin-right: 8px; /* Add margin to the home icon */
+}
+
 
 .settings-content {
     flex-grow: 1;
