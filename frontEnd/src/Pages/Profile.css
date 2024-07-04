@@ -11,6 +11,10 @@
     background-color: #e0f7fa;
     padding: 20px;
     border-radius: 10px;
+    width: 300px;
+    height: auto;
+    position: relative;
+    padding-bottom: 10px; /* Add padding to ensure the container has some space below the button */
 }
 
 .profile-picture {

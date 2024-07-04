@@ -189,6 +189,25 @@ app.get('/posts', (req, res) => {
     });
 });
 
+
+// Post Details Fetching Endpoint (Updated as per your request)
+app.get('/post/:id', (req, res) => {
+    const postId = req.params.id;
+    const sql = `
+        SELECT posts.*, login.name AS user_name, login.email AS user_email, login.profile_pic AS user_profile_pic
+        FROM posts
+        JOIN login ON posts.email = login.email
+        WHERE posts.id = ?`;
+    db.query(sql, [postId], (err, data) => {
+        if (err) {
+            console.error("Error fetching post:", err);
+            return res.status(500).json({ message: 'Error fetching post' });
+        }
+        return res.json(data[0]);
+    });
+});
+
+
 // Delete post endpoint
 app.post('/delete-post', (req, res) => {
     const { id } = req.body;
@@ -218,23 +237,6 @@ app.get('/search-posts', (req, res) => {
             return res.json("Error");
         }
         return res.json(data);
-    });
-});
-
-// Post Details and Own Post Details
-app.get('/post/:id', (req, res) => {
-    const postId = req.params.id;
-    const sql = `
-        SELECT posts.*, login.name AS user_name, login.email AS user_email, login.id AS user_id
-        FROM posts
-        JOIN login ON posts.email = login.email
-        WHERE posts.id = ?`;
-    db.query(sql, [postId], (err, data) => {
-        if (err) {
-            console.error("Error fetching post:", err);
-            return res.status(500).json({ message: 'Error fetching post' });
-        }
-        return res.json(data[0]);
     });
 });
 
@@ -287,7 +289,7 @@ app.get('/inbox/:userId', (req, res) => {
         ORDER BY 
             lastMessageTime DESC
     `;
-    
+
     db.query(query, [userId, userId], (err, results) => {
         if (err) {
             console.error(err);
@@ -297,8 +299,6 @@ app.get('/inbox/:userId', (req, res) => {
         }
     });
 });
-
-
 
 app.get('/inbox/:email', async (req, res) => {
     const email = req.params.email;
@@ -313,18 +313,13 @@ app.get('/inbox/:email', async (req, res) => {
              WHERE $1 IN (c.buyer_id, c.seller_id)`,
             [userId]
         );
-        
+
         res.json(chatsResult.rows);
     } catch (error) {
         console.error('Error fetching chats:', error);
         res.status(500).json({ error: 'Failed to fetch chats' });
     }
 });
-
-
-
-
-
 
 app.get('/getChats/:userId', (req, res) => {
     const userId = req.params.userId;
@@ -346,6 +341,7 @@ app.get('/getUserById/:userId', (req, res) => {
     });
 });
 
+// Ensure Chat Creation
 app.post('/createChat', (req, res) => {
     const { buyer_id, seller_id } = req.body;
 
@@ -385,10 +381,12 @@ app.get('/chats/:user_id', (req, res) => {
     const user_id = req.params.user_id;
 
     const query = `
-        SELECT chats.id, buyer.email AS buyer_email, seller.email AS seller_email
+        SELECT chats.id, buyer.email AS buyer_email, seller.email AS seller_email,
+               posts.title AS postTitle, posts.picture AS postImage, login.profile_pic, login.name
         FROM chats
         JOIN login AS buyer ON chats.buyer_id = buyer.id
         JOIN login AS seller ON chats.seller_id = seller.id
+        LEFT JOIN posts ON chats.post_id = posts.id
         WHERE buyer.id = ? OR seller.id = ?`;
 
     db.query(query, [user_id, user_id], (err, result) => {
@@ -399,6 +397,8 @@ app.get('/chats/:user_id', (req, res) => {
     });
 });
 
+
+
 // Endpoint to fetch messages for a chat
 app.get('/messages/:chat_id', (req, res) => {
     const chat_id = req.params.chat_id;
@@ -406,11 +406,15 @@ app.get('/messages/:chat_id', (req, res) => {
     const query = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY timestamp';
     db.query(query, [chat_id], (err, result) => {
         if (err) {
+            console.error("Error fetching messages:", err);
             return res.status(500).send({ message: 'Failed to fetch messages' });
         }
         res.status(200).send(result);
     });
 });
+
+
+
 
 app.post('/messages', (req, res) => {
     const { chat_id, user_email, message } = req.body;
@@ -426,6 +430,7 @@ app.post('/messages', (req, res) => {
         }
     );
 });
+
 
 app.listen(8081, () => {
     console.log("Server is running on port 8081");

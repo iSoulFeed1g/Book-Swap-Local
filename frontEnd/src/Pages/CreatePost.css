@@ -40,15 +40,15 @@
 }
 
 .selected-image {
-    width: 10%;
-    height: 10%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
 .remove-image-button {
     position: absolute;
     top: 7px; /* Adjust as needed */
-    right: 470px; /* Adjust as needed */
+    right: 7px; /* Adjust as needed */
     background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
@@ -62,7 +62,6 @@
     align-items: center;
     justify-content: center;
 }
-
 
 .drop-zone {
     border: 2px dashed #007bff;

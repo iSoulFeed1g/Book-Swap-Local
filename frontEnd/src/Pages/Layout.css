@@ -1,0 +1,109 @@
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 60px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    gap: 20px;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.sidebar-icon:hover,
+.sidebar-icon.active {
+    color: #007bff;
+}
+
+.main-content {
+    margin-left: 80px;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    margin-bottom: 20px;
+    justify-content: space-between;
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    left: 20px;
+    width: 100px;
+    height: auto;
+}
+
+.search-form {
+    display: flex;
+    flex-grow: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding-right: 40px;
+}
+
+.search-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    font-size: 16px;
+}
+
+.add-post-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 150px;
+    margin-left: auto;
+    position: absolute;
+    right: 20px;
+}
+
+.add-post-button:hover {
+    background-color: #218838;
+}

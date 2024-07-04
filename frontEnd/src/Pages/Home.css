@@ -1,41 +1,74 @@
 .home-container {
-    padding: 20px;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.sidebar {
+    width: 60px;
+    background-color: #333;
+    color: white;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    align-items: center;
+    justify-content: center; /* Center icons vertically */
+    padding-top: 20px;
+    gap: 20px;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.sidebar-icon:hover {
+    color: #007bff;
+}
+
+.main-content {
+    margin-left: 80px; /* Adjust margin to make space for the sidebar */
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center the content within the header */
     align-items: center;
     padding: 10px 20px;
     background-color: #333;
     color: white;
     margin-bottom: 20px;
+    position: relative; /* Ensure the logo is positioned correctly */
 }
 
 .logo {
-    width: 100px; /* Adjust width as needed */
-    height: auto; /* Automatically adjust height to maintain aspect ratio */
+    position: absolute;
+    left: 20px;
+    width: 100px;
+    height: auto;
 }
 
 .search-form {
     display: flex;
     flex-grow: 1;
-    max-width: 600px; /* Increase max-width for larger search bar */
-    margin: 0 20px;
-    position: relative; /* To position the search button inside the input */
+    max-width: 600px;
+    margin: 0 auto; /* Center the search form */
+    position: relative;
 }
 
 .search-input {
     flex-grow: 1;
-    padding: 10px; /* Increase padding for better usability */
+    padding: 10px;
     border-radius: 5px;
     border: none;
     outline: none;
-    font-size: 16px; /* Increase font size for better readability */
-    padding-right: 40px; /* Make space for the search icon */
+    font-size: 16px;
+    padding-right: 40px;
 }
 
 .search-button {
@@ -52,43 +85,6 @@
     justify-content: center;
     color: #007bff;
     font-size: 16px;
-}
-
-.nav-menu {
-    position: relative;
-}
-
-.nav-icon {
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.nav-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #fff;
-    color: #333;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: none;
-    flex-direction: column;
-}
-
-.nav-menu:hover .nav-dropdown {
-    display: flex;
-}
-
-.nav-dropdown button {
-    padding: 10px;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    width: 100%;
-}
-
-.nav-dropdown button:hover {
-    background-color: #f0f0f0;
 }
 
 .posts-container {

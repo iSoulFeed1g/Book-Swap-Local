@@ -4,12 +4,13 @@ import Login from './Login/Login';
 import Signup from './Login/Signup';
 import Home from './Pages/Home';
 import Profile from './Pages/Profile';
-import Settings from './Pages/Settings';
+import Settings from './Pages/Settings/Settings';
 import CreatePost from './Pages/CreatePost';
 import PostDetail from './Pages/PostDetail';
 import EditPost from './Pages/EditPost';
 import Chat from './Pages/Chat';
 import Inbox from './Pages/Inbox';
+import Layout from './Pages/Layout';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/inbox/:email" element={<Inbox />} />
         <Route path="/inbox/:chatId?" element={<Inbox />} />
         <Route path="/inbox" element={<Inbox />} />
+        <Route path="/layout" element={<Layout />} />
       </Routes>
     </BrowserRouter>
   );

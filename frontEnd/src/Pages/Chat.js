@@ -1,73 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Chat.css';
 
 const Chat = ({ chatId, selectedChat }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [userId, setUserId] = useState(null);
+    const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user && user.id) {
-            setUserId(user.id);
-        }
-
-        const fetchMessages = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8081/messages/${chatId}`);
-                setMessages(response.data);
-            } catch (err) {
-                console.error('Error fetching messages:', err);
-            }
-        };
-
-        fetchMessages();
+        axios.get(`http://localhost:8081/messages/${chatId}`)
+            .then(res => {
+                console.log("Fetched messages:", res.data);
+                setMessages(res.data);
+            })
+            .catch(err => {
+                console.error("Error fetching messages:", err);
+            });
     }, [chatId]);
 
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
+    const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
 
-        try {
-            await axios.post('http://localhost:8081/messages', {
-                chat_id: chatId,
-                user_email: JSON.parse(localStorage.getItem('user')).email,
-                message: newMessage
+        const messageData = {
+            chat_id: chatId,
+            user_email: user.email,
+            message: newMessage,
+            postTitle: selectedChat.postTitle,
+            postImage: selectedChat.postImage
+        };
+
+        axios.post('http://localhost:8081/messages', messageData)
+            .then(res => {
+                setMessages([...messages, { ...messageData, timestamp: new Date() }]);
+                setNewMessage('');
+            })
+            .catch(err => {
+                console.error("Error sending message:", err);
             });
-            setMessages([...messages, { message: newMessage, user_email: JSON.parse(localStorage.getItem('user')).email }]);
-            setNewMessage('');
-        } catch (err) {
-            console.error('Error sending message:', err);
-        }
     };
 
     return (
         <div className="chat-container">
-            {selectedChat && (
-                <div className="chat-header">
-                    <img src={`http://localhost:8081/${selectedChat.profile_pic}`} alt={selectedChat.name} className="chat-header-pic" />
-                    <h2 className="chat-header-name">{selectedChat.name}</h2>
+            <div className="chat-header">
+                <img src={`http://localhost:8081/${selectedChat.profile_pic}`} alt={selectedChat.name} className="chat-profile-pic" />
+                <div>
+                    <h2>{selectedChat.name}</h2>
                 </div>
-            )}
-            <div className="messages">
+            </div>
+            <div className="chat-messages">
                 {messages.map((msg, index) => (
-                    <div key={index} className={msg.user_email === JSON.parse(localStorage.getItem('user')).email ? 'message own' : 'message'}>
-                        <div className="message-content">
-                            <span>{msg.message}</span>
-                        </div>
+                    <div key={index} className={`chat-message ${msg.user_email === user.email ? 'sent' : 'received'}`}>
+                        {msg.postTitle && (
+                            <div className="message-post-info">
+                                <img src={`http://localhost:8081/${msg.postImage}`} alt={msg.postTitle} className="message-post-image" />
+                                <span>{msg.postTitle}</span>
+                            </div>
+                        )}
+                        <p>{msg.message}</p>
                     </div>
                 ))}
             </div>
-            <form className="new-message-form" onSubmit={handleSendMessage}>
+            <div className="chat-input">
                 <input
                     type="text"
-                    placeholder="Type your message..."
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder="Type your message..."
                 />
-                <button type="submit" className="send-btn">Send</button>
-            </form>
+                <button onClick={handleSendMessage}>Send</button>
+            </div>
         </div>
     );
 };

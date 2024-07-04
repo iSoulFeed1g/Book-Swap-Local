@@ -4,6 +4,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './CreatePost.css';
+import Layout from './Layout'; // Import the Layout component
 
 function CreatePost() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -68,7 +69,7 @@ function CreatePost() {
         }
 
         const formData = new FormData();
-        formData.append('picture', selectedImage); // Changed 'image' to 'picture' to match backend
+        formData.append('picture', selectedImage);
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
@@ -97,91 +98,97 @@ function CreatePost() {
         navigate('/profile');
     };
 
+    const handleSearch = (query) => {
+        console.log('Search query:', query);
+    };
+
     return (
-        <div className="create-post-container">
-            <h2>Publish a Post</h2>
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className={`form-control mt-2 ${titleError ? 'error-border' : ''}`}
-            />
-            <textarea
-                placeholder="Write a caption..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className={`form-control mt-2 ${descriptionError ? 'error-border' : ''}`}
-            ></textarea>
-            <input
-                type="text"
-                placeholder="Author"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className={`form-control mt-2 ${authorError ? 'error-border' : ''}`}
-            />
-            <div className="price-input-container">
+        <Layout onSearch={handleSearch}>
+            <div className="create-post-container">
+                <h2>Publish a Post</h2>
                 <input
                     type="text"
-                    placeholder="Price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className={`form-control mt-2 price-input ${priceError ? 'error-border' : ''}`}
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className={`form-control mt-2 ${titleError ? 'error-border' : ''}`}
                 />
-                <span className="currency-symbol">€</span>
-            </div>
-            <div className="image-upload-section">
-                <label htmlFor="file-input" className="image-upload-label">
-                    Add or Drag & Drop an image
-                </label>
+                <textarea
+                    placeholder="Write a caption..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className={`form-control mt-2 ${descriptionError ? 'error-border' : ''}`}
+                ></textarea>
                 <input
-                    id="file-input"
-                    type="file"
-                    onChange={handleFileChange}
-                    className="form-control mt-2"
-                    style={{ display: 'none' }}
+                    type="text"
+                    placeholder="Author"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    className={`form-control mt-2 ${authorError ? 'error-border' : ''}`}
                 />
-                <div
-                    className="drop-zone"
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                        e.preventDefault();
-                        setSelectedImage(e.dataTransfer.files[0]);
-                    }}
-                >
-                    {selectedImage ? (
-                        <div className="image-preview">
-                            <img
-                                src={URL.createObjectURL(selectedImage)}
-                                alt="Selected"
-                                className="selected-image"
-                            />
-                            <button
-                                className="remove-image-button"
-                                onClick={() => setSelectedImage(null)}
-                            >
-                                <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                        </div>
-                    ) : (
-                        <p>Add or Drag & Drop an image</p>
-                    )}
+                <div className="price-input-container">
+                    <input
+                        type="text"
+                        placeholder="Price"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        className={`form-control mt-2 price-input ${priceError ? 'error-border' : ''}`}
+                    />
+                    <span className="currency-symbol">€</span>
                 </div>
-            </div>
-            <button className="btn btn-primary mt-2" onClick={handleSharePost}>Share</button>
-            <button className="btn btn-secondary mt-2" onClick={handleCancelPost}>Cancel</button>
-
-            {showDiscardModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <p>Discard post?</p>
-                        <p>If you leave, your edits won't be saved.</p>
-                        <button className="btn btn-danger mt-2" onClick={handleDiscardPost}>Discard</button>
-                        <button className="btn btn-secondary mt-2" onClick={() => setShowDiscardModal(false)}>Cancel</button>
+                <div className="image-upload-section">
+                    <label htmlFor="file-input" className="image-upload-label">
+                        Add or Drag & Drop an image below
+                    </label>
+                    <input
+                        id="file-input"
+                        type="file"
+                        onChange={handleFileChange}
+                        className="form-control mt-2"
+                        style={{ display: 'none' }}
+                    />
+                    <div
+                        className="drop-zone"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            setSelectedImage(e.dataTransfer.files[0]);
+                        }}
+                    >
+                        {selectedImage ? (
+                            <div className="image-preview">
+                                <img
+                                    src={URL.createObjectURL(selectedImage)}
+                                    alt="Selected"
+                                    className="selected-image"
+                                />
+                                <button
+                                    className="remove-image-button"
+                                    onClick={() => setSelectedImage(null)}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                            </div>
+                        ) : (
+                            <p></p>
+                        )}
                     </div>
                 </div>
-            )}
-        </div>
+                <button className="btn btn-primary mt-2" onClick={handleSharePost}>Share</button>
+                <button className="btn btn-secondary mt-2" onClick={handleCancelPost}>Cancel</button>
+
+                {showDiscardModal && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <p>Discard post?</p>
+                            <p>If you leave, your edits won't be saved.</p>
+                            <button className="btn btn-danger mt-2" onClick={handleDiscardPost}>Discard</button>
+                            <button className="btn btn-secondary mt-2" onClick={() => setShowDiscardModal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </Layout>
     );
 }
 
