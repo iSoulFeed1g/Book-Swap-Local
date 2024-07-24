@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './CreatePost.css';
-import Layout from './Layout'; // Import the Layout component
+import Layout from './Layout';
 
 function CreatePost() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -17,7 +17,10 @@ function CreatePost() {
     const [descriptionError, setDescriptionError] = useState(false);
     const [priceError, setPriceError] = useState(false);
     const [authorError, setAuthorError] = useState(false);
-    const [user, setUser] = useState(null); 
+    const [genreError, setGenreError] = useState(false);
+    const [user, setUser] = useState(null);
+    const [genres, setGenres] = useState([]);
+    const [selectedGenre, setSelectedGenre] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,17 +30,40 @@ function CreatePost() {
         } else {
             navigate('/');
         }
+
+        axios.get('http://localhost:8081/genres')
+            .then(res => {
+                setGenres(res.data);
+            })
+            .catch(err => {
+                console.error("Error fetching genres:", err);
+            });
     }, [navigate]);
 
     const handleFileChange = (e) => {
         setSelectedImage(e.target.files[0]);
     };
 
+     const triggerShakeAnimation = () => {
+        const elements = document.querySelectorAll('.error-border');
+        elements.forEach(el => {
+            el.classList.remove('shake');
+            setTimeout(() => el.classList.add('shake'), 0);
+        });
+    };
+
     const handleSharePost = () => {
         let hasError = false;
 
+        const titleElement = document.querySelector('#title');
+        const descriptionElement = document.querySelector('#description');
+        const priceElement = document.querySelector('#price');
+        const authorElement = document.querySelector('#author');
+        const genreElement = document.querySelector('#genre');
+
         if (!title) {
             setTitleError(true);
+            triggerShakeAnimation(titleElement);
             hasError = true;
         } else {
             setTitleError(false);
@@ -45,6 +71,7 @@ function CreatePost() {
 
         if (!description) {
             setDescriptionError(true);
+            triggerShakeAnimation(descriptionElement);
             hasError = true;
         } else {
             setDescriptionError(false);
@@ -52,6 +79,7 @@ function CreatePost() {
 
         if (!price) {
             setPriceError(true);
+            triggerShakeAnimation(priceElement);
             hasError = true;
         } else {
             setPriceError(false);
@@ -59,9 +87,18 @@ function CreatePost() {
 
         if (!author) {
             setAuthorError(true);
+            triggerShakeAnimation(authorElement);
             hasError = true;
         } else {
             setAuthorError(false);
+        }
+
+        if (!selectedGenre) {
+            setGenreError(true);
+            triggerShakeAnimation(genreElement);
+            hasError = true;
+        } else {
+            setGenreError(false);
         }
 
         if (hasError) {
@@ -75,6 +112,7 @@ function CreatePost() {
         formData.append('price', price);
         formData.append('author', author);
         formData.append('email', user.email);
+        formData.append('genre', selectedGenre);
 
         axios.post('http://localhost:8081/create-post', formData)
             .then(res => {
@@ -107,6 +145,7 @@ function CreatePost() {
             <div className="create-post-container">
                 <h2>Publish a Post</h2>
                 <input
+                    id="title"
                     type="text"
                     placeholder="Title"
                     value={title}
@@ -114,12 +153,14 @@ function CreatePost() {
                     className={`form-control mt-2 ${titleError ? 'error-border' : ''}`}
                 />
                 <textarea
+                    id="description"
                     placeholder="Write a caption..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className={`form-control mt-2 ${descriptionError ? 'error-border' : ''}`}
                 ></textarea>
                 <input
+                    id="author"
                     type="text"
                     placeholder="Author"
                     value={author}
@@ -128,6 +169,7 @@ function CreatePost() {
                 />
                 <div className="price-input-container">
                     <input
+                        id="price"
                         type="text"
                         placeholder="Price"
                         value={price}
@@ -135,6 +177,19 @@ function CreatePost() {
                         className={`form-control mt-2 price-input ${priceError ? 'error-border' : ''}`}
                     />
                     <span className="currency-symbol">€</span>
+                </div>
+                <div className="genre-input-container">
+                    <select
+                        id="genre"
+                        className={`form-control mt-2 ${genreError ? 'error-border' : ''}`}
+                        value={selectedGenre}
+                        onChange={(e) => setSelectedGenre(e.target.value)}
+                    >
+                        <option value="">Select Genre</option>
+                        {genres.map((genre) => (
+                            <option key={genre.id} value={genre.name}>{genre.name}</option>
+                        ))}
+                    </select>
                 </div>
                 <div className="image-upload-section">
                     <label htmlFor="file-input" className="image-upload-label">

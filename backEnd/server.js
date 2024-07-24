@@ -141,11 +141,11 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
 
 // Create post endpoint
 app.post('/create-post', upload.single('picture'), (req, res) => {
-    const { title, description, price, author, email } = req.body;
+    const { title, description, price, author, email, genre } = req.body;
     const picture = req.file ? req.file.path : null;
 
-    const sql = "INSERT INTO posts (title, description, price, author, picture, email) VALUES (?, ?, ?, ?, ?, ?)";
-    db.query(sql, [title, description, price, author, picture, email], (err, data) => {
+    const sql = "INSERT INTO posts (title, description, price, author, picture, email, genre) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [title, description, price, author, picture, email, genre], (err, data) => {
         if (err) {
             console.error("Error creating post:", err);
             return res.status(500).json({ message: 'Error creating post' });
@@ -156,16 +156,16 @@ app.post('/create-post', upload.single('picture'), (req, res) => {
 
 // Update post endpoint
 app.post('/edit-post', upload.single('picture'), (req, res) => {
-    const { id, title, description, price, author } = req.body;
+    const { id, title, description, price, author, genre } = req.body;
     const picture = req.file ? req.file.path : null;
 
     const updateQuery = `
         UPDATE posts
-        SET title = ?, description = ?, price = ?, author = ?
+        SET title = ?, description = ?, price = ?, author = ?, genre = ?
         ${picture ? ', picture = ?' : ''}
         WHERE id = ?`;
 
-    const queryParams = picture ? [title, description, price, author, picture, id] : [title, description, price, author, id];
+    const queryParams = picture ? [title, description, price, author, genre, picture, id] : [title, description, price, author, genre, id];
 
     db.query(updateQuery, queryParams, (err, data) => {
         if (err) {
@@ -406,6 +406,19 @@ app.get('/getUserById/:userId', (req, res) => {
         res.send(results[0]);
     });
 });
+
+// Fetch genres endpoint
+app.get('/genres', (req, res) => {
+    db.query('SELECT * FROM genres', (error, results) => {
+        if (error) {
+            console.log(error);
+            res.status(500).send('Error fetching genres');
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 
 
 app.listen(8081, () => {
