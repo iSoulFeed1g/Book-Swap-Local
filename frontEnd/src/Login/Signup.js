@@ -8,13 +8,11 @@ function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
     const handleSignup = (e) => {
         e.preventDefault();
         setErrorMessage('');
-        setSuccessMessage('');
 
         axios.post('http://localhost:8081/signup', { name, email, password })
             .then(res => {
@@ -35,7 +33,7 @@ function Signup() {
     return (
         <div className="signup-container">
             <div className="signup-box">
-                <h2>Create Account</h2>
+                <h2>Book-Swap</h2>
                 <form onSubmit={handleSignup}>
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
@@ -70,19 +68,10 @@ function Signup() {
                             required
                         />
                     </div>
-                    <div className="form-group form-check">
-                        <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="terms"
-                            required
-                        />
-                        <label className="form-check-label" htmlFor="terms">I agree to terms and conditions</label>
-                    </div>
                     {errorMessage && <span className="text-danger">{errorMessage}</span>}
                     <button type="submit" className="btn btn-primary">Sign up</button>
                 </form>
-                <p>Already have an account? <a href="/">Log In</a></p>
+                <p>Already have an account? <a href="/">Log in</a></p>
             </div>
         </div>
     );

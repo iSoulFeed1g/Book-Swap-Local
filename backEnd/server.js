@@ -12,9 +12,9 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 5306,
+    port: 3306,
     password: '',
-    database: 'SISIII2024_89211069'
+    database: 'sisiii2024_89211069'
 });
 
 // Multer setup for file uploads
@@ -68,18 +68,25 @@ app.post('/signup', (req, res) => {
 
 // Login endpoint
 app.post('/login', (req, res) => {
-    const sql = "SELECT * FROM login WHERE `email` = ? AND `password` = ?";
-    db.query(sql, [req.body.email, req.body.password], (err, data) => {
+    const sql = "SELECT * FROM login WHERE `email` = ?";
+    db.query(sql, [req.body.email], (err, data) => {
         if (err) {
-            return res.json("Error");
+            return res.status(500).json("Error");
         }
-        if (data.length > 0) {
-            return res.json(data[0]);  // Return user data
+        if (data.length === 0) {
+            return res.status(401).json("Account does not exist");
         } else {
-            return res.json("Failed");
+            const user = data[0];
+            if (user.password === req.body.password) {
+                return res.json(user); // Return user data
+            } else {
+                return res.status(401).json("Incorrect password");
+            }
         }
     });
 });
+
+
 
 // Change password endpoint
 app.post('/change-password', (req, res) => {
@@ -93,35 +100,44 @@ app.post('/change-password', (req, res) => {
     });
 });
 
-// Delete profile endpoint
-app.post('/delete-profile', (req, res) => {
-    const { email } = req.body;
-    const sqlDelete = "DELETE FROM login WHERE email = ?";
-    db.query(sqlDelete, [email], (err, result) => {
+// Route to delete a user
+app.post('/delete-user', (req, res) => {
+    const email = req.body.email;
+
+    const deleteChatsQuery = 'DELETE FROM chats WHERE buyer_id = (SELECT id FROM login WHERE email = ?)';
+    const deleteUserQuery = 'DELETE FROM login WHERE email = ?';
+
+    db.query(deleteChatsQuery, [email], (err, result) => {
         if (err) {
-            return res.json("Error");
+            console.error('Error deleting chats:', err);
+            res.status(500).send('Failed to delete user chats');
+            return;
         }
-        if (result.affectedRows > 0) {
-            return res.json("Success");
-        } else {
-            return res.json("User not found");
-        }
+        db.query(deleteUserQuery, [email], (err, result) => {
+            if (err) {
+                console.error('Error deleting user:', err);
+                res.status(500).send('Failed to delete user');
+                return;
+            }
+            res.send('Success');
+        });
     });
 });
 
 // Upload profile picture endpoint
 app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
-    const { email } = req.body;
+    const email = req.body.email;
     const profilePicPath = req.file.path;
-
-    const sqlUpdate = "UPDATE login SET profile_pic = ? WHERE email = ?";
-    db.query(sqlUpdate, [profilePicPath, email], (err, data) => {
-        if (err) {
-            return res.json("Error");
-        }
-        return res.json({ message: "Success", profilePicPath });
+  
+    const sql = 'UPDATE login SET profile_pic = ? WHERE email = ?';
+    db.query(sql, [profilePicPath, email], (err, result) => {
+      if (err) {
+        console.error('Error updating profile picture:', err);
+        return res.status(500).json({ message: 'Failed' });
+      }
+      return res.json({ message: 'Success', profilePicPath: profilePicPath });
     });
-});
+  });
 
 // Create post endpoint
 app.post('/create-post', upload.single('picture'), (req, res) => {
@@ -189,12 +205,11 @@ app.get('/posts', (req, res) => {
     });
 });
 
-
-// Post Details Fetching Endpoint (Updated as per your request)
+// Post Details Fetching Endpoint
 app.get('/post/:id', (req, res) => {
     const postId = req.params.id;
     const sql = `
-        SELECT posts.*, login.name AS user_name, login.email AS user_email, login.profile_pic AS user_profile_pic
+        SELECT posts.*, login.id AS user_id, login.name AS user_name, login.email AS user_email, login.profile_pic AS user_profile_pic
         FROM posts
         JOIN login ON posts.email = login.email
         WHERE posts.id = ?`;
@@ -206,7 +221,6 @@ app.get('/post/:id', (req, res) => {
         return res.json(data[0]);
     });
 });
-
 
 // Delete post endpoint
 app.post('/delete-post', (req, res) => {
@@ -240,32 +254,84 @@ app.get('/search-posts', (req, res) => {
     });
 });
 
-// Get all chats for a user
-app.get('/chats', (req, res) => {
-    const { user_id } = req.query;
-    if (!user_id) {
-        return res.status(400).json({ message: "User ID is required" });
-    }
+// Ensure Chat Creation
+app.post('/createChat', (req, res) => {
+    const { buyer_id, seller_id, post_id, postImage, postTitle } = req.body;
+    const query = 'SELECT id FROM chats WHERE (buyer_id = ? AND seller_id = ? AND post_id = ?) OR (buyer_id = ? AND seller_id = ? AND post_id = ?)';
+    const values = [buyer_id, seller_id, post_id, seller_id, buyer_id, post_id];
 
-    const sql = `
-        SELECT chats.id, 
-               CASE 
-                   WHEN chats.buyer_id = ? THEN seller.name 
-                   ELSE buyer.name 
-               END AS chat_name
-        FROM chats
-        JOIN login AS buyer ON chats.buyer_id = buyer.id
-        JOIN login AS seller ON chats.seller_id = seller.id
-        WHERE buyer_id = ? OR seller_id = ?`;
-    db.query(sql, [user_id, user_id, user_id], (err, data) => {
+    db.query(query, values, (err, result) => {
         if (err) {
-            console.error("Error fetching chats:", err);
-            return res.status(500).json({ message: "Error fetching chats", error: err });
+            console.error('Error checking for existing chat:', err);
+            res.status(500).json({ error: 'Error checking for existing chat' });
+        } else if (result.length > 0) {
+            res.json({ chat_id: result[0].id });
+        } else {
+            const createQuery = 'INSERT INTO chats (buyer_id, seller_id, post_id, postImage, postTitle) VALUES (?, ?, ?, ?, ?)';
+            const createValues = [buyer_id, seller_id, post_id, postImage, postTitle];
+
+            db.query(createQuery, createValues, (err, result) => {
+                if (err) {
+                    console.error('Error creating chat:', err);
+                    res.status(500).json({ error: 'Error creating chat' });
+                } else {
+                    res.json({ chat_id: result.insertId });
+                }
+            });
         }
-        return res.json(data);
     });
 });
 
+app.get('/chats/:user_id', (req, res) => {
+    const user_id = req.params.user_id;
+
+    const query = 'SELECT * FROM chats WHERE buyer_id = ? OR seller_id = ?';
+    const values = [user_id, user_id];
+
+    db.query(query, values, (err, result) => {
+        if (err) {
+            console.error('Error retrieving chats:', err);
+            res.status(500).json({ error: 'Error retrieving chats' });
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+app.get('/messages/:chat_id', (req, res) => {
+    const chat_id = req.params.chat_id;
+
+    const query = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY timestamp ASC';
+    const values = [chat_id];
+
+    db.query(query, values, (err, result) => {
+        if (err) {
+            console.error('Error retrieving messages:', err);
+            res.status(500).json({ error: 'Error retrieving messages' });
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+
+app.post('/messages', (req, res) => {
+    const { chat_id, user_email, message, postImage, postTitle } = req.body;
+    const query = `
+        INSERT INTO messages (chat_id, user_email, message, timestamp, postImage, postTitle)
+        VALUES (?, ?, ?, NOW(), ?, ?)
+    `;
+    db.query(query, [chat_id, user_email, message, postImage, postTitle], (err, results) => {
+        if (err) {
+            console.error('Error saving message:', err);
+            res.status(500).send('Server error');
+            return;
+        }
+        res.send('Message saved');
+    });
+});
+
+// Endpoint to fetch all inbox for a user
 app.get('/inbox/:userId', (req, res) => {
     const userId = req.params.userId;
     const query = `
@@ -339,96 +405,6 @@ app.get('/getUserById/:userId', (req, res) => {
         }
         res.send(results[0]);
     });
-});
-
-// Ensure Chat Creation
-app.post('/createChat', (req, res) => {
-    const { buyer_id, seller_id } = req.body;
-
-    if (!buyer_id || !seller_id) {
-        return res.status(400).json({ message: 'buyer_id and seller_id are required' });
-    }
-
-    const query = `
-        SELECT id 
-        FROM chats 
-        WHERE (buyer_id = ? AND seller_id = ?) 
-           OR (buyer_id = ? AND seller_id = ?)`;
-
-    db.query(query, [buyer_id, seller_id, seller_id, buyer_id], (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Error checking for existing chat', error: err });
-        }
-
-        if (results.length > 0) {
-            // Chat already exists
-            return res.json({ chat_id: results[0].id });
-        }
-
-        // Create a new chat if it doesn't exist
-        const insertQuery = 'INSERT INTO chats (buyer_id, seller_id) VALUES (?, ?)';
-        db.query(insertQuery, [buyer_id, seller_id], (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: 'Error creating chat', error: err });
-            }
-            return res.json({ chat_id: result.insertId });
-        });
-    });
-});
-
-// Endpoint to fetch chats for a user
-app.get('/chats/:user_id', (req, res) => {
-    const user_id = req.params.user_id;
-
-    const query = `
-        SELECT chats.id, buyer.email AS buyer_email, seller.email AS seller_email,
-               posts.title AS postTitle, posts.picture AS postImage, login.profile_pic, login.name
-        FROM chats
-        JOIN login AS buyer ON chats.buyer_id = buyer.id
-        JOIN login AS seller ON chats.seller_id = seller.id
-        LEFT JOIN posts ON chats.post_id = posts.id
-        WHERE buyer.id = ? OR seller.id = ?`;
-
-    db.query(query, [user_id, user_id], (err, result) => {
-        if (err) {
-            return res.status(500).send({ message: 'Failed to fetch chats' });
-        }
-        res.status(200).send(result);
-    });
-});
-
-
-
-// Endpoint to fetch messages for a chat
-app.get('/messages/:chat_id', (req, res) => {
-    const chat_id = req.params.chat_id;
-
-    const query = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY timestamp';
-    db.query(query, [chat_id], (err, result) => {
-        if (err) {
-            console.error("Error fetching messages:", err);
-            return res.status(500).send({ message: 'Failed to fetch messages' });
-        }
-        res.status(200).send(result);
-    });
-});
-
-
-
-
-app.post('/messages', (req, res) => {
-    const { chat_id, user_email, message } = req.body;
-    db.query(
-        "INSERT INTO messages (chat_id, user_email, message) VALUES (?, ?, ?)",
-        [chat_id, user_email, message],
-        (err, result) => {
-            if (err) {
-                res.send({ err });
-            } else {
-                res.send(result);
-            }
-        }
-    );
 });
 
 

@@ -1,10 +1,11 @@
 /* ChatModal.css */
+
 .chat-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
@@ -16,8 +17,8 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
-    max-width: 80%;
+    width: 90%;
+    max-width: 500px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -25,53 +26,74 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .close-button {
     background: none;
     border: none;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
 }
 
 .chat-modal-body {
-    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.post-preview {
+.post-preview-container {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    background: rgba(200, 200, 200, 0.5);
+    padding: 10px;
+    border-radius: 8px;
 }
 
-.post-image-small {
-    width: 50px;
-    height: 50px;
+.post-image-preview {
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     margin-right: 10px;
+    border-radius: 8px;
 }
 
-textarea {
+.post-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.post-info p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.message-textarea {
     width: 100%;
-    height: 80px;
+    height: 100px;
     padding: 10px;
-    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
 .chat-modal-footer {
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .send-button {
-    background-color: #007bff;
+    background: #007bff;
     color: white;
     border: none;
     padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
-    border-radius: 4px;
+    font-size: 14px;
 }
 
 .send-button:hover {
-    background-color: #0056b3;
+    background: #0056b3;
 }

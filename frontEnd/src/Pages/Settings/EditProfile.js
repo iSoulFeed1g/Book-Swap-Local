@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import './EditProfile.css';
 
@@ -15,6 +15,7 @@ function EditProfile() {
     const [showModal, setShowModal] = useState(false);
     const [profilePic, setProfilePic] = useState(null);
     const [profilePicPath, setProfilePicPath] = useState('');
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,6 +50,10 @@ function EditProfile() {
                     setSuccessMessage("Password changed successfully");
                     setNewPassword("");
                     setConfirmPassword("");
+                    // Update user data in local storage
+                    const updatedUser = { ...user, password: newPassword };
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    setUser(updatedUser);
                 } else {
                     setErrorMessage("Failed to change password");
                 }
@@ -68,7 +73,7 @@ function EditProfile() {
     };
 
     const handleConfirmDelete = () => {
-        axios.post('http://localhost:8081/delete-profile', { email: user.email })
+        axios.post('http://localhost:8081/delete-user', { email: user.email })
             .then(res => {
                 if (res.data === "Success") {
                     localStorage.removeItem('user');
@@ -101,6 +106,8 @@ function EditProfile() {
                     const updatedUser = { ...user, profile_pic: res.data.profilePicPath };
                     localStorage.setItem('user', JSON.stringify(updatedUser));
                     setUser(updatedUser);
+                    // Hide the upload button after success
+                    setProfilePic(null);
                 } else {
                     setErrorMessage("Failed to upload profile picture");
                 }
@@ -123,8 +130,9 @@ function EditProfile() {
                 </h3>
                 <div className="profile-pic-container">
                     {profilePicPath && <img src={`http://localhost:8081/${profilePicPath}`} alt="Profile" className="profile-pic" />}
-                    <input type="file" onChange={handleFileChange} className="form-control" />
-                    <button className="btn btn-primary mt-2" onClick={handleUploadProfilePic}>Upload Profile Picture</button>
+                    <input type="file" onChange={handleFileChange} className="form-control" style={{ display: 'none' }} id="fileInput" />
+                    <button className="btn btn-primary mt-2" onClick={() => document.getElementById('fileInput').click()}>Upload Profile Picture</button>
+                    {profilePic && <button className="btn btn-success mt-2" onClick={handleUploadProfilePic}>Save Profile Picture</button>}
                 </div>
                 <p><strong>Name:</strong> {user.name}</p>
                 <p><strong>Email:</strong> {user.email}</p>
@@ -132,11 +140,14 @@ function EditProfile() {
                     <label><strong>Password:</strong></label>
                     <div className="input-group">
                         <input
-                            type="password"
+                            type={passwordVisible ? "text" : "password"}
                             className="form-control"
                             value={user.password}
                             readOnly
                         />
+                        <button className="btn btn-outline-secondary" onClick={() => setPasswordVisible(!passwordVisible)} type="button">
+                            <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
+                        </button>
                     </div>
                 </div>
                 <hr />

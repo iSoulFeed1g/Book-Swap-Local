@@ -24,7 +24,11 @@ function Login() {
                 }
             })
             .catch(err => {
-                setErrorMessage('Login failed');
+                if (err.response && err.response.status === 401) {
+                    setErrorMessage(err.response.data);
+                } else {
+                    setErrorMessage('Login failed');
+                }
                 console.error(err);
             });
     };
@@ -32,7 +36,7 @@ function Login() {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2>Log in</h2>
+                <h2>Book-Swap</h2>
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
@@ -59,7 +63,7 @@ function Login() {
                     {errorMessage && <span className="text-danger">{errorMessage}</span>}
                     <button type="submit" className="btn btn-primary">Log in</button>
                 </form>
-                <p>Don't have an account? <a href="/signup">Create Account</a></p>
+                <p>Don't have an account? <a href="/signup">Sign up</a></p>
             </div>
         </div>
     );

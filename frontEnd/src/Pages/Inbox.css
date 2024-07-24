@@ -1,3 +1,4 @@
+/* Inbox.css */
 .inbox-page {
     display: flex;
     height: 100vh;
@@ -22,7 +23,7 @@
     cursor: pointer;
 }
 
-.inbox-item:hover {
+.inbox-item:hover, .inbox-item.active {
     background-color: #f0f0f0;
 }
 
@@ -65,8 +66,4 @@
 .welcome-message h2 {
     font-size: 2em;
     margin-bottom: 10px;
-}
-
-.inbox-item.selected {
-    background-color: #f0f0f0;
 }

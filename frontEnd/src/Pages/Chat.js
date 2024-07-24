@@ -25,8 +25,8 @@ const Chat = ({ chatId, selectedChat }) => {
             chat_id: chatId,
             user_email: user.email,
             message: newMessage,
-            postTitle: selectedChat.postTitle,
-            postImage: selectedChat.postImage
+            postImage: selectedChat.postImage,
+            postTitle: selectedChat.postTitle
         };
 
         axios.post('http://localhost:8081/messages', messageData)
@@ -47,18 +47,21 @@ const Chat = ({ chatId, selectedChat }) => {
                     <h2>{selectedChat.name}</h2>
                 </div>
             </div>
-            <div className="chat-messages">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`chat-message ${msg.user_email === user.email ? 'sent' : 'received'}`}>
-                        {msg.postTitle && (
-                            <div className="message-post-info">
-                                <img src={`http://localhost:8081/${msg.postImage}`} alt={msg.postTitle} className="message-post-image" />
-                                <span>{msg.postTitle}</span>
-                            </div>
-                        )}
-                        <p>{msg.message}</p>
+            <div className="chat-messages-container">
+                {selectedChat.postImage && (
+                    <div className="message-post-info">
+                        <img src={`http://localhost:8081/${selectedChat.postImage}`} alt={selectedChat.postTitle} className="message-post-image" />
+                        <span>{selectedChat.postTitle}</span>
                     </div>
-                ))}
+                )}
+                <div className="chat-messages">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`chat-message ${msg.user_email === user.email ? 'sent' : 'received'}`}>
+                            <p>{msg.message}</p>
+                            <small className="timestamp">{new Date(msg.timestamp).toLocaleString()}</small>
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="chat-input">
                 <input
