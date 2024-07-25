@@ -14,7 +14,7 @@
     width: 300px;
     height: auto;
     position: relative;
-    padding-bottom: 10px; /* Add padding to ensure the container has some space below the button */
+    padding-bottom: 10px;
 }
 
 .profile-picture {
@@ -46,27 +46,22 @@
 }
 
 .posts-section {
-    width: 75%; 
-    margin-left: -50px;
-    margin-right: 25px;
-    margin-top: 20px;
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.post:hover {
+    transform: translateY(-10px);
 }
 
 .posts-container {
-    background-color: #f0f0f0;
+    background-color: #f8f9fa;
     padding: 20px;
+    width: 75%;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 2px solid #dcdcdc;
-}
-
-.posts-container::before {
-    content: '';
-    display: block;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
+    width: 100%;
 }
 
 .no-posts {
@@ -81,107 +76,89 @@
 }
 
 .post {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fff;
-    padding: 10px;
+    background-color: #f8f9fa;
     border-radius: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline */
+    width: 100%;
+    position: relative;
+    padding: 20px;
+    justify-content: space-between;
+}
+
+.post:hover {
+    transform: translateY(-10px);
 }
 
 .post-image {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: auto;
     object-fit: cover;
     border-radius: 10px;
 }
 
 .post-details {
-    flex-grow: 1;
-    padding: 0 20px;
-    text-align: left !important;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    margin-left: 20px;
 }
 
 .post-title {
-    font-size: 25px;
+    font-size: 20px; 
     font-weight: bold;
+    color: #333;
+    margin: 0 0 10px 0;
+    text-decoration: none;
+}
+
+.post-title:hover {
+    color: #007bff;
+}
+
+.post-author,
+.post-user,
+.post-genre {
+    font-size: 16px; 
+    color: #555;
+    margin: 5px 0;
+}
+
+.post-author {
+    margin-top: 20px;
     margin-bottom: 5px;
-    text-align: left;
 }
 
-.post-description {
-    font-size: 15px;
-    margin-top: 5px; /* Add margin to separate from title */
-    text-align: left;
+.post-user {
+    margin-bottom: 5px;
 }
 
-.post-actions {
-    display: flex;
-    gap: 10px;
-    opacity: 0;
-    transition: opacity 0.3s;
+.post-price-container {
+    position: absolute;
+    top: 10px;
+    margin-left: 500px;
+    right: 2px;
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.post:hover .post-actions {
-    opacity: 1;
+.post-price {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 18px; 
+    margin: 0;
 }
 
-.modal {
-    display: flex !important; 
-    align-items: center !important;
-    justify-content: center !important;
-    position: fixed !important;
-    z-index: 1 !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: auto !important;
-    background-color: rgba(0,0,0,0.4) !important;
-}
-
-.modal-content {
-    background-color: #fefefe !important;
-    padding: 20px !important;
-    border: 1px solid #888 !important;
-    width: 80% !important;
-    max-width: 500px !important;
-    border-radius: 10px !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
-    text-align: center !important;
-}
-
-.image-preview {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 20px;
-    border-radius: 10px;
-}
-
-button {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-}
-
-.btn-danger {
-    background-color: red;
-    color: white;
-}
-
-.btn-secondary {
-    background-color: gray;
-    color: white;
-}
-
-.btn-primary {
-    background-color: blue;
-    color: white;
-}
-
-.btn-success {
-    background-color: green;
-    color: white;
+.post-genre {
+    margin-bottom: 5px;
 }

@@ -1,156 +1,101 @@
+/* Container for the whole page */
 .home-container {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-}
-
-.sidebar {
-    width: 60px;
-    background-color: #333;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* Center icons vertically */
-    padding-top: 20px;
-    gap: 20px;
-    position: fixed;
-    height: 100vh;
-}
-
-.sidebar-icon {
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.sidebar-icon:hover {
-    color: #007bff;
-}
-
-.main-content {
-    margin-left: 80px; /* Adjust margin to make space for the sidebar */
     padding: 20px;
-    flex-grow: 1;
+}
+
+/* Layout for the posts list */
+.posts-list {
     display: flex;
     flex-direction: column;
-}
-
-.header {
-    display: flex;
-    justify-content: center; /* Center the content within the header */
     align-items: center;
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
-    margin-bottom: 20px;
-    position: relative; /* Ensure the logo is positioned correctly */
-}
-
-.logo {
-    position: absolute;
-    left: 20px;
-    width: 100px;
-    height: auto;
-}
-
-.search-form {
-    display: flex;
-    flex-grow: 1;
-    max-width: 600px;
-    margin: 0 auto; /* Center the search form */
-    position: relative;
-}
-
-.search-input {
-    flex-grow: 1;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    padding-right: 40px;
-}
-
-.search-button {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #007bff;
-    font-size: 16px;
-}
-
-.posts-container {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
     gap: 20px;
 }
 
-.post {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fff;
-    padding: 10px;
+/* Style for each post card */
+.post-card {
+    background-color: #f8f9fa;
     border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    text-decoration: none;
+    width: 75%;
+    position: relative;
+    padding: 20px;
+    justify-content: space-between;
 }
 
+.post-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Style for the post image */
 .post-image {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: auto;
     object-fit: cover;
     border-radius: 10px;
 }
 
+/* Style for the details section of the post */
 .post-details {
-    flex-grow: 1;
-    padding: 0 20px;
-    text-align: left;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    margin-left: 20px;
 }
 
 .post-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    margin-bottom: 5px;
+    color: #333;
+    margin: 0 0 10px 0;
 }
 
-.post-description {
-    font-size: 14px;
+.post-title:hover {
+    color: #007bff;
+}
+
+.post-author,
+.post-user,
+.post-genre {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+.post-author {
     margin-bottom: 5px;
 }
 
 .post-user {
-    font-size: 12px;
-    color: #555;
+    margin-bottom: 5px;
 }
 
-.post-actions {
-    display: flex;
-    gap: 10px;
+/* Style for the post price */
+.post-price-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.likes, .dislikes {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
+.post-price {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0;
 }
 
-.footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: relative;
-    bottom: 0;
-    width: 100%;
+.post-genre {
+    margin-bottom: 5px;
 }

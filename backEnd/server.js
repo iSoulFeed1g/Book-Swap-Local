@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 3306,
+    port: 5306,
     password: '',
     database: 'sisiii2024_89211069'
 });
@@ -192,18 +192,56 @@ app.get('/all-posts', (req, res) => {
     });
 });
 
-// Endpoint to fetch posts by email
+// Endpoint to fetch posts with user names
 app.get('/posts', (req, res) => {
-    const { email } = req.query;
-    const sql = "SELECT * FROM posts WHERE email = ?";
-    db.query(sql, [email], (err, data) => {
-        if (err) {
-            console.error("Error fetching posts:", err);
-            return res.status(500).json({ message: "Error", error: err });
+    const { searchTerm, price, genre, sortBy } = req.query;
+    let query = `
+        SELECT posts.*, login.name as user_name 
+        FROM posts 
+        LEFT JOIN login ON posts.email = login.email 
+        WHERE 1=1
+    `;
+    const queryParams = [];
+
+    if (searchTerm) {
+        query += ' AND (title LIKE ? OR author LIKE ? OR description LIKE ?)';
+        queryParams.push(`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`);
+    }
+
+    if (price) {
+        query += ' AND price <= ?';
+        queryParams.push(price);
+    }
+
+    if (genre) {
+        query += ' AND genre = ?';
+        queryParams.push(genre);
+    }
+
+    if (sortBy) {
+        if (sortBy === 'newest') {
+            query += ' ORDER BY time DESC';
+        } else if (sortBy === 'oldest') {
+            query += ' ORDER BY time ASC';
+        } else if (sortBy === 'priceAsc') {
+            query += ' ORDER BY price ASC';
+        } else if (sortBy === 'priceDesc') {
+            query += ' ORDER BY price DESC';
         }
-        return res.json(data);
+    }
+
+    db.query(query, queryParams, (err, results) => {
+        if (err) {
+            console.log('Error fetching posts:', err);
+            res.status(500).send('Error fetching posts.');
+        } else {
+            res.json(results);
+        }
     });
 });
+
+
+
 
 // Post Details Fetching Endpoint
 app.get('/post/:id', (req, res) => {
@@ -419,6 +457,43 @@ app.get('/genres', (req, res) => {
     });
 });
 
+// Filter posts endpoint
+app.get('/filter-posts', (req, res) => {
+    const { query, sortBy, genre } = req.query;
+    let sql = `
+        SELECT posts.*, login.name as user_name 
+        FROM posts 
+        JOIN login ON posts.email = login.email 
+        WHERE posts.title LIKE ? OR posts.description LIKE ?
+    `;
+
+    const values = [`%${query}%`, `%${query}%`];
+
+    if (genre) {
+        sql += ` AND posts.genre = ?`;
+        values.push(genre);
+    }
+
+    if (sortBy) {
+        if (sortBy === 'date') {
+            sql += ` ORDER BY posts.created_at DESC`;
+        } else if (sortBy === 'price') {
+            sql += ` ORDER BY posts.price ASC`;
+        } else if (sortBy === 'author') {
+            sql += ` ORDER BY posts.author ASC`;
+        }
+    } else {
+        sql += ` ORDER BY posts.id DESC`;
+    }
+
+    db.query(sql, values, (err, data) => {
+        if (err) {
+            console.error("Error filtering posts:", err);
+            return res.status(500).json("Error");
+        }
+        return res.json(data);
+    });
+});
 
 
 app.listen(8081, () => {

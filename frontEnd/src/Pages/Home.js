@@ -1,89 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Layout from './Layout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
+import Layout from './Layout';
 
 function Home() {
-    const [posts, setPosts] = useState([]);
-    const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState({ sortBy: 'newest', genre: '' });
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-        fetchPosts();
-    }, []);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchTerm = params.get('searchTerm') || '';
+    const sortBy = params.get('sortBy') || 'newest';
+    const genre = params.get('genre') || '';
+    setSearchQuery(searchTerm);
+    setFilter({ sortBy, genre });
+  }, [location.search]);
 
-    const fetchPosts = () => {
-        axios.get('http://localhost:8081/all-posts')
-            .then(res => {
-                if (Array.isArray(res.data)) {
-                    setPosts(res.data);
-                } else {
-                    setPosts([]);
-                }
-            })
-            .catch(err => {
-                setPosts([]);
-            });
-    };
+  useEffect(() => {
+    fetchPosts();
+  }, [filter, searchQuery]);
 
-    const handleSearch = (query) => {
-        if (query.trim() === '') {
-            fetchPosts();
-        } else {
-            axios.get('http://localhost:8081/search-posts', {
-                params: { q: query }
-            })
-            .then(res => {
-                if (Array.isArray(res.data)) {
-                    setPosts(res.data);
-                } else {
-                    setPosts([]);
-                }
-            })
-            .catch(err => {
-                setPosts([]);
-            });
-        }
-    };
+  const fetchPosts = () => {
+    axios.get('http://localhost:8081/posts', { params: { ...filter, searchTerm: searchQuery } }) // Changed query to searchTerm
+      .then(res => {
+        const postsWithUsernames = res.data.map(post => ({
+          ...post,
+          user_name: post.user_name || 'Unknown', // Default value
+        }));
+        setPosts(postsWithUsernames);
+      })
+      .catch(err => {
+        console.log("Error fetching posts:", err);
+      });
+  };
 
-    const handlePostClick = (id) => {
-        navigate(`/post/${id}`);
-    };
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setFilter({ ...filter, query });
+    navigate(`/home?searchTerm=${query}`);
+  };
 
-    return (
-        <Layout onSearch={handleSearch}>
-            <div className="home-container">
-                <h2>All Posts</h2>
-                <div className="posts-container">
-                    {Array.isArray(posts) && posts.length > 0 ? (
-                        posts.map(post => (
-                            <div className="post" key={post.id} onClick={() => handlePostClick(post.id)}>
-                                <img src={`http://localhost:8081/${post.picture || 'uploads/1719331628307.png'}`} alt={post.title} className="post-image" />
-                                <div className="post-details">
-                                    <p className="post-title">{post.title}</p>
-                                    <p className="post-description">{post.description}</p>
-                                    {post.price !== undefined && post.price !== null ? (
-                                        <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
-                                    ) : (
-                                        <p className="post-price">Price: N/A</p>
-                                    )}
-                                    <p className="post-user">Posted by: {post.user_name || 'Unknown'}</p>
-                                </div>
-                                <div className="post-actions">
-                                    <span className="likes"><FontAwesomeIcon icon={faThumbsUp} /> 10</span>
-                                    <span className="dislikes"><FontAwesomeIcon icon={faThumbsDown} /> 2</span>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="no-posts">No posts available.</p>
-                    )}
-                </div>
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  const handleCardClick = (postId) => {
+    navigate(`/post/${postId}`);
+  };
+
+  return (
+    <Layout onSearch={handleSearch} onFilterChange={handleFilterChange}>
+      <div className="home-container">
+        <div className="posts-list">
+          {posts.length ? posts.map(post => (
+            <div key={post.id} className="post-card" onClick={() => handleCardClick(post.id)}>
+              <div className="post-price-container">
+                <p className="post-price">€{parseFloat(post.price).toFixed(2)}</p>
+              </div>
+              <img src={`http://localhost:8081/${post.picture}`} alt={post.title} className="post-image" />
+              <div className="post-details">
+                <h2 className="post-title">{post.title}</h2>
+                <p className="post-author">Author: {post.author}</p>
+                <p className="post-user">Posted by: {post.user_name}</p>
+                <p className="post-genre">Genre: {post.genre}</p>
+              </div>
             </div>
-        </Layout>
-    );
+          )) : <p>No posts found</p>}
+        </div>
+      </div>
+    </Layout>
+  );
 }
 
 export default Home;

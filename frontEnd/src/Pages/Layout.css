@@ -1,3 +1,4 @@
+/* Layout.css */
 .layout-container {
     display: flex;
     min-height: 100vh;
@@ -74,6 +75,22 @@
 .search-button {
     position: absolute;
     right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    font-size: 16px;
+}
+
+.filter-button {
+    position: absolute;
+    right: 50px;
     top: 0;
     bottom: 0;
     width: 40px;

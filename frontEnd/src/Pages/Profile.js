@@ -25,7 +25,7 @@ function Profile() {
     }, [navigate]);
 
     const fetchPosts = (email) => {
-        axios.get(`http://localhost:8081/posts?email=${email}`)
+        axios.get('http://localhost:8081/posts', { params: { email } })
             .then(res => {
                 const sortedPosts = res.data.sort((a, b) => b.id - a.id);
                 setPosts(sortedPosts);
@@ -49,7 +49,7 @@ function Profile() {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
-        navigate('/');
+        navigate('/login');
     };
 
     const handlePostClick = (postId) => {
@@ -92,11 +92,15 @@ function Profile() {
                                     style={{ cursor: 'pointer' }}
                                     onClick={() => handlePostClick(post.id)}
                                 >
+                                    <div className="post-price-container">
+                                        <p className="post-price">€{parseFloat(post.price).toFixed(2)}</p>
+                                    </div>
                                     <img src={`http://localhost:8081/${post.picture}`} alt={post.title} className="post-image" />
                                     <div className="post-details">
                                         <p className="post-title">{post.title}</p>
-                                        <p className="post-description">{post.description}</p>
-                                        <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
+                                        <p className="post-author">Author: {post.author}</p>
+                                        <p className="post-genre">Genre: {post.genre}</p>
+                                        <p className="post-user">Posted by: {post.user_name}</p>
                                     </div>
                                 </div>
                             ))
