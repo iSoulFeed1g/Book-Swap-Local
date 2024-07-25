@@ -65,8 +65,8 @@ function Home() {
               <div className="post-details">
                 <h2 className="post-title">{post.title}</h2>
                 <p className="post-author">Author: {post.author}</p>
-                <p className="post-user">Posted by: {post.user_name}</p>
                 <p className="post-genre">Genre: {post.genre}</p>
+                <p className="post-user">Posted by: {post.user_name}</p>
               </div>
             </div>
           )) : <p>No posts found</p>}
