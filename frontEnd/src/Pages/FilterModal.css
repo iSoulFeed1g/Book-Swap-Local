@@ -1,3 +1,13 @@
+.filter-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
 .filter-modal {
     position: fixed;
     top: 50%;
@@ -8,26 +18,43 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-  }
-  
-  .filter-modal select {
+    width: 90%;
+    max-width: 400px;
+}
+
+.filter-modal select,
+.filter-modal button {
     display: block;
     width: 100%;
     margin-bottom: 20px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
-  }
-  
-  .filter-modal button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
+    font-size: 16px;
+}
+
+.filter-modal button {
     background-color: #007bff;
     color: #fff;
-    font-size: 16px;
+    border: none;
     cursor: pointer;
-  }
-  
+}
+
+.filter-modal button:hover {
+    background-color: #0056b3;
+}
+
+.filter-modal-close {
+    position: absolute;
+    top: -10px; /* Adjust the top position */
+    right: -10px; /* Adjust the right position */
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+}

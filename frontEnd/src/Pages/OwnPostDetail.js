@@ -44,15 +44,27 @@ function OwnPostDetail({ post }) {
     return (
         <Layout onSearch={handleSearch}>
             <div className="post-detail-container">
-                <div className="post-header"></div>
+                <div className="post-header">
+                    <h1 className="post-title">{post.title}</h1>
+                    <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
+                </div>
                 <div className="post-content">
                     <div className="post-image-section">
                         <img src={`http://localhost:8081/${post.picture}`} alt={post.title} className="post-image-large" />
                     </div>
                     <div className="post-info-section">
-                        <h1 className="post-title">{post.title}</h1>
-                        <p className="post-author">by {post.author} (Author)</p>
-                        <p className="post-price">Price: €{parseFloat(post.price).toFixed(2)}</p>
+                        <div className="post-user-info">
+                            {post.user_profile_pic && (
+                                <img src={`http://localhost:8081/${post.user_profile_pic}`} alt={post.user_name} className="user-profile-pic" />
+                            )}
+                            <div className="user-info-text">
+                                <p className="post-user-name">{post.user_name}</p>
+                                <div className="post-user-likes">
+                                    <span className="likes"><FontAwesomeIcon icon={faThumbsUp} /> {post.user_likes}</span>
+                                    <span className="dislikes"><FontAwesomeIcon icon={faThumbsDown} /> {post.user_dislikes}</span>
+                                </div>
+                            </div>
+                        </div>
                         <p className="post-description">{post.description}</p>
                         <div className="post-actions">
                             <span className="likes"><FontAwesomeIcon icon={faThumbsUp} /> 10</span>

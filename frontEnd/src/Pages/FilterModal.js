@@ -30,20 +30,22 @@ function FilterModal({ onClose, onFilterChange }) {
   };
 
   return (
-    <div className="filter-modal">
-      <select value={selectedSortBy} onChange={(e) => setSelectedSortBy(e.target.value)}>
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-        <option value="priceAsc">Price: Low to High</option>
-        <option value="priceDesc">Price: High to Low</option>
-      </select>
-      <select value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)}>
-        <option value="">All Genres</option>
-        {genres.map(genre => (
-          <option key={genre.id} value={genre.name}>{genre.name}</option>
-        ))}
-      </select>
-      <button onClick={handleApplyFilters}>Apply Filters</button>
+    <div className="filter-modal-backdrop" onClick={onClose}>
+      <div className="filter-modal" onClick={(e) => e.stopPropagation()}>
+        <select value={selectedSortBy} onChange={(e) => setSelectedSortBy(e.target.value)}>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+        </select>
+        <select value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)}>
+          <option value="">All Genres</option>
+          {genres.map(genre => (
+            <option key={genre.id} value={genre.name}>{genre.name}</option>
+          ))}
+        </select>
+        <button onClick={handleApplyFilters}>Apply Filters</button>
+      </div>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import './PostDetail.css';
-import OwnPostDetail from './OwnPostDetail';
 import Layout from './Layout';
 import ChatModal from './ChatModal';
 
@@ -44,10 +43,6 @@ function PostDetail() {
 
     if (!post) {
         return <div>Loading...</div>;
-    }
-
-    if (user && post.user_email === user.email) {
-        return <OwnPostDetail post={post} navigate={navigate} />;
     }
 
     return (

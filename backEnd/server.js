@@ -194,7 +194,7 @@ app.get('/all-posts', (req, res) => {
 
 // Endpoint to fetch posts with user names
 app.get('/posts', (req, res) => {
-    const { searchTerm, price, genre, sortBy } = req.query;
+    const { searchTerm, price, genre, sortBy, email } = req.query;
     let query = `
         SELECT posts.*, login.name as user_name 
         FROM posts 
@@ -202,6 +202,11 @@ app.get('/posts', (req, res) => {
         WHERE 1=1
     `;
     const queryParams = [];
+
+    if (email) {
+        query += ' AND posts.email = ?';
+        queryParams.push(email);
+    }
 
     if (searchTerm) {
         query += ' AND (title LIKE ? OR author LIKE ? OR description LIKE ?)';
@@ -228,6 +233,8 @@ app.get('/posts', (req, res) => {
         } else if (sortBy === 'priceDesc') {
             query += ' ORDER BY price DESC';
         }
+    } else {
+        query += ' ORDER BY time DESC'; // Default sorting order
     }
 
     db.query(query, queryParams, (err, results) => {
@@ -239,6 +246,7 @@ app.get('/posts', (req, res) => {
         }
     });
 });
+
 
 
 
