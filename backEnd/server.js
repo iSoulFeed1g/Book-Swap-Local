@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 5306,
+    port: 4306,
     password: '',
     database: 'sisiii2024_89211069'
 });
@@ -248,9 +248,6 @@ app.get('/posts', (req, res) => {
 });
 
 
-
-
-
 // Post Details Fetching Endpoint
 app.get('/post/:id', (req, res) => {
     const postId = req.params.id;
@@ -267,6 +264,7 @@ app.get('/post/:id', (req, res) => {
         return res.json(data[0]);
     });
 });
+
 
 // Delete post endpoint
 app.post('/delete-post', (req, res) => {

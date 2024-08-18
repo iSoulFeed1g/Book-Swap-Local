@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EditProfile from './EditProfile';
 import PrivacySettings from './PrivacySettings';
@@ -9,6 +9,17 @@ import './Settings.css';
 function Settings() {
     const [activeTab, setActiveTab] = useState('edit-profile');
     const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            setUser(parsedData);
+        } else {
+            setUser(null); // Ensure user is null if not logged in
+        }
+    }, [navigate]);
 
     const renderContent = () => {
         switch (activeTab) {
@@ -27,6 +38,21 @@ function Settings() {
         // Implement search functionality if needed for Settings
         console.log('Search query:', query);
     };
+    
+    if (!user) {
+        return (
+            <Layout>
+                <div className="please-login">
+                    <div className="login-message">
+                        <p>Please log in to access your Settings.</p>
+                        <button className="btn btn-primary login-button" onClick={() => navigate('/login')}>
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout onSearch={handleSearch}>

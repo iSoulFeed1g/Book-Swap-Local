@@ -10,6 +10,7 @@ function Home() {
   const [filter, setFilter] = useState({ sortBy: 'newest', genre: '' });
   const navigate = useNavigate();
   const location = useLocation();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -48,9 +49,24 @@ function Home() {
     setFilter(newFilter);
   };
 
-  const handleCardClick = (postId) => {
-    navigate(`/post/${postId}`);
-  };
+ const handleCardClick = async (postId) => {
+    try {
+        // Fetch the post details
+        const response = await axios.get(`http://localhost:8081/post/${postId}`);
+        const post = response.data;
+
+        // Check if the user is the owner of the post
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (post.user_email === user.email) {
+            navigate(`/own-post/${postId}`);
+        } else {
+            navigate(`/post/${postId}`);
+        }
+    } catch (error) {
+        console.error("Error fetching post details:", error);
+    }
+};
+
 
   return (
     <Layout onSearch={handleSearch} onFilterChange={handleFilterChange}>

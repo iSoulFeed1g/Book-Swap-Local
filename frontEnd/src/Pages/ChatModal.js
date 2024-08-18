@@ -43,8 +43,15 @@ function ChatModal({ post, user, onClose }) {
         }
     };
 
+    // Function to handle click on overlay background
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();  // Close modal if the overlay is clicked
+        }
+    };
+
     return (
-        <div className="chat-modal-overlay">
+        <div className="chat-modal-overlay" onClick={handleOverlayClick}>
             <div className="chat-modal">
                 <div className="chat-modal-header">
                     <h2>Contact Seller</h2>

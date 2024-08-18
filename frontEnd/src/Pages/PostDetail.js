@@ -6,6 +6,7 @@ import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import './PostDetail.css';
 import Layout from './Layout';
 import ChatModal from './ChatModal';
+import LoginModal from './LoginModal';
 
 function PostDetail() {
     const { id } = useParams();
@@ -13,6 +14,7 @@ function PostDetail() {
     const [post, setPost] = useState(null);
     const [user, setUser] = useState(null);
     const [showChatModal, setShowChatModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -25,8 +27,13 @@ function PostDetail() {
     const fetchPost = () => {
         axios.get(`http://localhost:8081/post/${id}`)
             .then(res => {
-                console.log('Fetched post data:', res.data);
-                setPost(res.data);
+                const fetchedPost = res.data;
+                setPost(fetchedPost);
+
+                // Check if the current user is the author of the post
+                if (fetchedPost.user_id === user?.id) {
+                    navigate(`/own-post/${id}`); // Navigate to OwnPostDetail page
+                }
             })
             .catch(err => {
                 console.log("Error fetching post:", err);
@@ -34,8 +41,13 @@ function PostDetail() {
     };
 
     const handleContactSeller = () => {
-        setShowChatModal(true);
+        if (!user) {
+            setShowLoginModal(true); // Show login modal if user isn't logged in
+        } else {
+            setShowChatModal(true); // Show chat modal if user is logged in
+        }
     };
+    
 
     const handleSearch = (query) => {
         console.log('Search query:', query);
@@ -88,6 +100,12 @@ function PostDetail() {
                         post={post}
                         user={user}
                         onClose={() => setShowChatModal(false)}
+                    />
+                )}
+                {showLoginModal && (
+                    <LoginModal
+                        onClose={() => setShowLoginModal(false)}
+                        onLogin={() => navigate('/login')}
                     />
                 )}
             </div>

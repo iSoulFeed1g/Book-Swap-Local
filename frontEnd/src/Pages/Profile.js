@@ -20,7 +20,7 @@ function Profile() {
             setProfilePicPath(parsedData.profile_pic || '');
             fetchPosts(parsedData.email);
         } else {
-            navigate('/login');
+            setUser(null); // Ensure user is null if not logged in
         }
     }, [navigate]);
 
@@ -49,7 +49,7 @@ function Profile() {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
-        navigate('/');
+        navigate('/login');
     };
 
     const handlePostClick = (postId) => {
@@ -57,8 +57,20 @@ function Profile() {
     };
 
     if (!user) {
-        return <div>Loading...</div>;
+        return (
+            <Layout>
+                <div className="please-login">
+                    <div className="login-message">
+                        <p>Please log in to access your Profile.</p>
+                        <button className="btn btn-primary login-button" onClick={() => navigate('/login')}>
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </Layout>
+        );
     }
+    
 
     return (
         <Layout onSearch={handleSearch}>

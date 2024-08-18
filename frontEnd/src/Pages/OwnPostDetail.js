@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import './PostDetail.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Layout from './Layout';
 
-function OwnPostDetail({ post }) {
+function OwnPostDetail() {
+    const { id } = useParams();
     const navigate = useNavigate();
+    const [post, setPost] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8081/post/${id}`);
+                setPost(response.data);
+            } catch (err) {
+                console.error('Error fetching post:', err);
+            }
+        };
+
+        fetchPost();
+    }, [id]);
+
+    if (!post) {
+        return <div>Loading post details...</div>;
+    }
 
     const handleEditPost = (id) => {
         navigate(`/edit-post/${id}`);
@@ -18,19 +37,18 @@ function OwnPostDetail({ post }) {
         setShowDeleteModal(true);
     };
 
-    const confirmDeletePost = () => {
-        axios.post('http://localhost:8081/delete-post', { id: post.id })
-            .then(res => {
-                if (res.data.message === "Success") {
-                    navigate('/home');
-                } else {
-                    alert("Failed to delete post");
-                }
-            })
-            .catch(err => {
-                console.error("Error deleting post:", err);
-                alert("Error deleting post");
-            });
+    const confirmDeletePost = async () => {
+        try {
+            const response = await axios.post('http://localhost:8081/delete-post', { id: post.id });
+            if (response.data.message === "Success") {
+                navigate('/home');
+            } else {
+                alert("Failed to delete post");
+            }
+        } catch (err) {
+            console.error("Error deleting post:", err);
+            alert("Error deleting post");
+        }
     };
 
     const cancelDeletePost = () => {
@@ -71,7 +89,7 @@ function OwnPostDetail({ post }) {
                             <span className="dislikes"><FontAwesomeIcon icon={faThumbsDown} /> 2</span>
                         </div>
                         <div className="post-management-actions">
-                            <button className="btn btn-primary" key={post.id} onClick={() => handleEditPost(post.id)}><FontAwesomeIcon icon={faEdit} /> Edit Post</button>
+                            <button className="btn btn-primary" onClick={() => handleEditPost(post.id)}><FontAwesomeIcon icon={faEdit} /> Edit Post</button>
                             <button className="btn btn-danger" onClick={handleDeletePost}><FontAwesomeIcon icon={faTrash} /> Delete Post</button>
                         </div>
                         <p className="post-user">Posted by: {post.user_name || 'Unknown'}</p>

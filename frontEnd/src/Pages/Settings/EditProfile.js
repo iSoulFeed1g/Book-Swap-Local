@@ -25,7 +25,7 @@ function EditProfile() {
             setUser(parsedData);
             setProfilePicPath(parsedData.profile_pic || '');
         } else {
-            navigate('/'); // Redirect to login if user data is not found
+            navigate('/login'); // Redirect to login if user data is not found
         }
     }, [navigate]);
 
@@ -77,7 +77,7 @@ function EditProfile() {
             .then(res => {
                 if (res.data === "Success") {
                     localStorage.removeItem('user');
-                    navigate('/');
+                    navigate('/login');
                 } else {
                     setErrorMessage("Failed to delete profile");
                 }
@@ -134,8 +134,10 @@ function EditProfile() {
                     <button className="btn btn-primary mt-2" onClick={() => document.getElementById('fileInput').click()}>Upload Profile Picture</button>
                     {profilePic && <button className="btn btn-success mt-2" onClick={handleUploadProfilePic}>Save Profile Picture</button>}
                 </div>
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Name:</strong></p>
+                <p>{user.name}</p>
+                <p><strong>Email:</strong></p>
+                <p>{user.email}</p>
                 <div className="mb-3">
                     <label><strong>Password:</strong></label>
                     <div className="input-group">

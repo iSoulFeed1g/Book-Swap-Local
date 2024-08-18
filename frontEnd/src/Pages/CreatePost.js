@@ -28,7 +28,7 @@ function CreatePost() {
         if (userData) {
             setUser(JSON.parse(userData));
         } else {
-            navigate('/');
+            navigate('/login');
         }
 
         axios.get('http://localhost:8081/genres')

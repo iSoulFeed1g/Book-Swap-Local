@@ -33,6 +33,21 @@ function Inbox() {
         }
     }, [chatId, chats]);
 
+    if (!user) {
+        return (
+            <Layout>
+                <div className="please-login">
+                    <div className="login-message">
+                        <p>Please log in to access your Inbox.</p>
+                        <button className="btn btn-primary login-button" onClick={() => navigate('/login')}>
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
+
     const handleChatClick = (chat) => {
         setSelectedChat(chat);
         navigate(`/inbox/${chat.id}`);
