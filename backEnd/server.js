@@ -17,6 +17,14 @@ const db = mysql.createConnection({
     database: 'sisiii2024_89211069'
 });
 
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, '../frontEnd/build')));
+
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontEnd/build/index.html'));
+});
+
 // Multer setup for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
