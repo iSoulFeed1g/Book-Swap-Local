@@ -32,7 +32,13 @@ if (process.env.JAWSDB_URL) {
     };
 }
 
-const db = mysql.createConnection(dbConfig);
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    port: 4306,
+    password: '',
+    database: 'sisiii2024_89211069'
+});
 
 db.connect((err) => {
     if (err) {
@@ -40,14 +46,6 @@ db.connect((err) => {
         return;
     }
     console.log('Connected to the MySQL database.');
-});
-
-// Serve the static files from the React app
-app.use(express.static(path.join(__dirname, '../frontEnd/build')));
-
-// Handles any requests that don't match the ones above
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontEnd/build/index.html'));
 });
 
 // Multer setup for file uploads
@@ -159,14 +157,14 @@ app.post('/delete-user', (req, res) => {
 app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
     const email = req.body.email;
     const profilePicPath = req.file.path;
-  
+
     const sql = 'UPDATE login SET profile_pic = ? WHERE email = ?';
     db.query(sql, [profilePicPath, email], (err, result) => {
-      if (err) {
-        console.error('Error updating profile picture:', err);
-        return res.status(500).json({ message: 'Failed' });
-      }
-      return res.json({ message: 'Success', profilePicPath: profilePicPath });
+        if (err) {
+            console.error('Error updating profile picture:', err);
+            return res.status(500).json({ message: 'Failed' });
+        }
+        return res.json({ message: 'Success', profilePicPath: profilePicPath });
     });
 });
 
