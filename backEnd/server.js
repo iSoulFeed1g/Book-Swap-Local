@@ -4,17 +4,42 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    port: 4306,
-    password: '',
-    database: 'sisiii2024_89211069'
+let dbConfig;
+
+if (process.env.JAWSDB_URL) {
+    const params = url.parse(process.env.JAWSDB_URL);
+    const auth = params.auth.split(':');
+    dbConfig = {
+        host: params.hostname,
+        user: auth[0],
+        password: auth[1],
+        database: params.pathname.split('/')[1],
+        port: params.port
+    };
+} else {
+    dbConfig = {
+        host: 'localhost',
+        user: 'root',
+        port: 4306,
+        password: '',
+        database: 'sisiii2024_89211069'
+    };
+}
+
+const db = mysql.createConnection(dbConfig);
+
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to the database:', err);
+        return;
+    }
+    console.log('Connected to the MySQL database.');
 });
 
 // Serve the static files from the React app
@@ -94,8 +119,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-
 // Change password endpoint
 app.post('/change-password', (req, res) => {
     const { email, newPassword } = req.body;
@@ -145,7 +168,7 @@ app.post('/upload-profile-pic', upload.single('profilePic'), (req, res) => {
       }
       return res.json({ message: 'Success', profilePicPath: profilePicPath });
     });
-  });
+});
 
 // Create post endpoint
 app.post('/create-post', upload.single('picture'), (req, res) => {
@@ -255,7 +278,6 @@ app.get('/posts', (req, res) => {
     });
 });
 
-
 // Post Details Fetching Endpoint
 app.get('/post/:id', (req, res) => {
     const postId = req.params.id;
@@ -272,7 +294,6 @@ app.get('/post/:id', (req, res) => {
         return res.json(data[0]);
     });
 });
-
 
 // Delete post endpoint
 app.post('/delete-post', (req, res) => {
@@ -365,7 +386,6 @@ app.get('/messages/:chat_id', (req, res) => {
         }
     });
 });
-
 
 app.post('/messages', (req, res) => {
     const { chat_id, user_email, message, postImage, postTitle } = req.body;
@@ -509,7 +529,8 @@ app.get('/filter-posts', (req, res) => {
     });
 });
 
+const PORT = process.env.PORT || 8081;
 
-app.listen(8081, () => {
-    console.log("Server is running on port 8081");
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
