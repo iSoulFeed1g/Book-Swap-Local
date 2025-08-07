@@ -1,2 +1,4 @@
 /frontEnd/node_modules
 /frontEnd/node_modules/.cache
+/node_modules
+/node_modules/.cache
