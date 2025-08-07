@@ -26,18 +26,18 @@ if (process.env.JAWSDB_URL) {
     dbConfig = {
         host: 'localhost',
         user: 'root',
-        port: 4306,
-        password: '',
-        database: 'sisiii2024_89211069'
+        port: 3306,
+        password: 'Vanja123!',
+        database: 'sisiii2025_89211069'
     };
 }
 
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 4306,
-    password: '',
-    database: 'sisiii2024_89211069'
+    port: 3306,
+    password: 'Vanja123!',
+    database: 'sisiii2025_89211069'
 });
 
 db.connect((err) => {

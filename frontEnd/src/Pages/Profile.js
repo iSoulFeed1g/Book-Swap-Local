@@ -53,7 +53,7 @@ function Profile() {
     };
 
     const handlePostClick = (postId) => {
-        navigate(`/post/${postId}`);
+        navigate(`/own-post/${postId}`);
     };
 
     if (!user) {
